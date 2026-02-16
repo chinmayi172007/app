@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Smart ID System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #34a853;
+            --accent: #fbbc04;
+            --danger: #ea4335;
+            --bg-light: #f0f4f8;
+            --bg-white: #ffffff;
+            --text-dark: #202124;
+            --text-gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER / NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), #1557b0);
+            color: white;
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .navbar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-links a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .navbar-links a:hover,
+        .navbar-links a.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-user .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 8px;
+        }
+
+        .notification-bell .badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 2px 8px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-gray);
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .sidebar-menu a.active {
+            background: #e8f0fe;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-menu a .icon {
+            width: 22px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-section-title {
+            padding: 20px 28px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #9aa0a6;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* ===== PAGE SECTIONS ===== */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* ===== DASHBOARD ===== */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .page-header p {
+            color: var(--text-gray);
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue { background: #e8f0fe; color: var(--primary); }
+        .stat-icon.green { background: #e6f4ea; color: var(--secondary); }
+        .stat-icon.yellow { background: #fef7e0; color: #e37400; }
+        .stat-icon.red { background: #fce8e6; color: var(--danger); }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-info p {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .stat-info .trend {
+            font-size: 0.78rem;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .trend.up { color: var(--secondary); }
+        .trend.down { color: var(--danger); }
+
+        /* ===== CARDS / PANELS ===== */
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* ===== GRID LAYOUTS ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-active { background: #e6f4ea; color: #1e8e3e; }
+        .badge-pending { background: #fef7e0; color: #e37400; }
+        .badge-expired { background: #fce8e6; color: #d93025; }
+        .badge-suspended { background: #f1f3f4; color: #5f6368; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(26,115,232,0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaed;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #2d9249;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93025;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9aa0a6;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* ===== SEARCH & FILTER BAR ===== */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 42px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ===== ID CARD PREVIEW ===== */
+        .id-card {
+            width: 400px;
+            background: linear-gradient(145deg, #1a73e8, #1557b0);
+            border-radius: 16px;
+            padding: 0;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .id-card-top {
+            padding: 20px 24px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .id-card-org {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .id-card-org .org-logo {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .id-card-org h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .id-card-org small {
+            font-size: 0.68rem;
+            opacity: 0.8;
+        }
+
+        .id-card-chip {
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .id-card-body {
+            padding: 16px 24px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .id-card-photo {
+            width: 90px;
+            height: 110px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .id-card-details {
+            flex: 1;
+        }
+
+        .id-card-details h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .id-card-details .detail-row {
+            display: flex;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .id-card-details .detail-row .label {
+            width: 70px;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        .id-card-details .detail-row .value {
+            font-weight: 600;
+        }
+
+        .id-card-bottom {
+            background: rgba(0,0,0,0.15);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .id-card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .id-card-qr {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            font-size: 0.5rem;
+            padding: 4px;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-cell {
+            background: var(--text-dark);
+            border-radius: 1px;
+        }
+
+        .qr-cell.empty {
+            background: white;
+        }
+
+        /* ===== ACTIVITY LOG ===== */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: flex-start;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.new { background: #e6f4ea; color: #1e8e3e; }
+        .activity-icon.update { background: #e8f0fe; color: var(--primary); }
+        .activity-icon.alert { background: #fef7e0; color: #e37400; }
+        .activity-icon.delete { background: #fce8e6; color: #d93025; }
+
+        .activity-content h4 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .activity-content p {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        /* ===== PHOTO UPLOAD ===== */
+        .photo-upload {
+            width: 150px;
+            height: 180px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8f9fa;
+        }
+
+        .photo-upload:hover {
+            border-color: var(--primary);
+            background: #e8f0fe;
+        }
+
+        .photo-upload .upload-icon {
+            font-size: 2rem;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .photo-upload span {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            text-align: center;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f1f3f4;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: #e8eaed;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            height: 8px;
+            background: #e8eaed;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.blue { background: var(--primary); }
+        .progress-fill.green { background: var(--secondary); }
+        .progress-fill.yellow { background: var(--accent); }
+
+        /* ===== CHARTS PLACEHOLDER ===== */
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), #6ab7ff);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            min-height: 20px;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-bar .bar-label {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            white-space: nowrap;
+        }
+
+        .chart-bar .bar-value {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* ===== DONUT CHART ===== */
+        .donut-chart {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .donut-center .label {
+            font-size: 0.72rem;
+            color: var(--text-gray);
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== VERIFICATION SCANNER ===== */
+        .scanner-area {
+            width: 300px;
+            height: 300px;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 10%; }
+            50% { top: 85%; }
+            100% { top: 10%; }
+        }
+
+        .scanner-corners {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--secondary);
+            border-style: solid;
+        }
+
+        .corner.tl { top: 15px; left: 15px; border-width: 3px 0 0 3px; }
+        .corner.tr { top: 15px; right: 15px; border-width: 3px 3px 0 0; }
+        .corner.bl { bottom: 15px; left: 15px; border-width: 0 0 3px 3px; }
+        .corner.br { bottom: 15px; right: 15px; border-width: 0 3px 3px 0; }
+
+        .scanner-text {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            z-index: 1;
+        }
+
+        /* ===== VERIFICATION RESULT ===== */
+        .verification-result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .verify-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        .verify-icon.success {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .verify-icon.fail {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        /* ===== SETTINGS ===== */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .setting-info p {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 2px;
+        }
+
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: #dadce0;
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .toggle.active {
+            background: var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active::after {
+            left: 24px;
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-white);
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .toast.success { border-color: var(--secondary); }
+        .toast.error { border-color: var(--danger); }
+        .toast.info { border-color: var(--primary); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-message strong {
+            display: block;
+            font-size: 0.88rem;
+        }
+
+        .toast-message span {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        /* ===== MEMBER PROFILE ===== */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #6ab7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-info .id-number {
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .profile-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            padding: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 64px;
+                z-index: 999;
+                transition: var(--transition);
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .navbar-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .id-card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .navbar, .sidebar, .toolbar, .btn {
+                display: none !important;
+            }
+            
+            .main-content {
+                padding: 0;
+            }
+            
+            .id-card {
+                box-shadow: none;
+                border: 2px solid #000;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <span class="hamburger" onclick="toggleSidebar()">☰</span>
+            <div class="navbar-brand">
+                <div class="logo-icon">🆔</div>
+                <div>
+                    <div>SmartID</div>
+                    <div style="font-size:0.65rem;opacity:0.8;font-weight:400;">Community Management</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-links">
+            <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
+            <a href="#" onclick="showPage('members')">Members</a>
+            <a href="#" onclick="showPage('register')">Register</a>
+            <a href="#" onclick="showPage('verify')">Verify</a>
+        </div>
+
+        <div class="navbar-user">
+            <div class="notification-bell" onclick="showToast('info', 'Notifications', '3 new alerts')">
+                🔔
+                <span class="badge">3</span>
+            </div>
+            <div class="avatar" onclick="showPage('settings')">A</div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <div class="sidebar-section-title">Main</div>
+                <li><a href="#" class="active" onclick="showPage('dashboard')" data-page="dashboard"><span class="icon">📊</span> Dashboard</a></li>
+                <li><a href="#" onclick="showPage('members')" data-page="members"><span class="icon">👥</span> Members</a></li>
+                <li><a href="#" onclick="showPage('register')" data-page="register"><span class="icon">📝</span> Register New</a></li>
+                <li><a href="#" onclick="showPage('id-cards')" data-page="id-cards"><span class="icon">💳</span> ID Cards</a></li>
+                
+                <div class="sidebar-section-title">Operations</div>
+                <li><a href="#" onclick="showPage('verify')" data-page="verify"><span class="icon">✅</span> Verify ID</a></li>
+                <li><a href="#" onclick="showPage('reports')" data-page="reports"><span class="icon">📈</span> Reports</a></li>
+                <li><a href="#" onclick="showPage('access-log')" data-page="access-log"><span class="icon">📋</span> Access Log</a></li>
+                
+                <div class="sidebar-section-title">System</div>
+                <li><a href="#" onclick="showPage('settings')" data-page="settings"><span class="icon">⚙️</span> Settings</a></li>
+                <li><a href="#" onclick="showPage('help')" data-page="help"><span class="icon">❓</span> Help & Support</a></li>
+            </ul>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- ===== DASHBOARD PAGE ===== -->
+            <div class="page-section active" id="page-dashboard">
+                <div class="page-header fade-in">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, Admin! Here's your community overview.</p>
+                </div>
+
+                <div class="stats-grid fade-in">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">👥</div>
+                        <div class="stat-info">
+                            <h3>2,847</h3>
+                            <p>Total Members</p>
+                            <div class="trend up">↑ 12% from last month</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-info">
+                            <h3>2,541</h3>
+                            <p>Active IDs</p>
+                            <div class="trend up">↑ 8% from last month</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">⏳</div>
+                        <div class="stat-info">
+                            <h3>186</h3>
+                            <p>Pending Approval</p>
+                            <div class="trend down">↑ 23% from last month</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">🚫</div>
+                        <div class="stat-info">
+                            <h3>120</h3>
+                            <p>Expired IDs</p>
+                            <div class="trend down">↓ 5% from last month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3 fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📊 Registration Trends</h2>
+                            <select class="filter-select" style="font-size:0.8rem;padding:6px 10px;">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                                <option>Last 90 Days</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder" style="margin-bottom: 30px;">
+                                <div class="chart-bar" style="height:45%"><span class="bar-value">28</span><span class="bar-label">Mon</span></div>
+                                <div class="chart-bar" style="height:65%"><span class="bar-value">42</span><span class="bar-label">Tue</span></div>
+                                <div class="chart-bar" style="height:35%"><span class="bar-value">18</span><span class="bar-label">Wed</span></div>
+                                <div class="chart-bar" style="height:80%"><span class="bar-value">55</span><span class="bar-label">Thu</span></div>
+                                <div class="chart-bar" style="height:55%"><span class="bar-value">35</span><span class="bar-label">Fri</span></div>
+                                <div class="chart-bar" style="height:90%"><span class="bar-value">62</span><span class="bar-label">Sat</span></div>
+                                <div class="chart-bar" style="height:40%"><span class="bar-value">22</span><span class="bar-label">Sun</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📌 Status Overview</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="donut-chart" style="background: conic-gradient(#1a73e8 0deg 230deg, #34a853 230deg 290deg, #fbbc04 290deg 330deg, #ea4335 330deg 360deg);">
+                                <div class="donut-center" style="width:100px;height:100px;background:white;border-radius:50%;">
+                                    <div class="number">89%</div>
+                                    <div class="label">Active</div>
+                                </div>
+                            </div>
+                            <div class="legend">
+                                <div class="legend-item"><div class="legend-dot" style="background:#1a73e8"></div> Active (2,541)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:#34a853"></div> New (186)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:#fbbc04"></div> Pending (120)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:#ea4335"></div> Expired (120)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3 fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>🕐 Recent Registrations</h2>
+                            <button class="btn btn-sm btn-secondary" onclick="showPage('members')">View All</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>ID Number</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Maria Santos</strong></td>
+                                            <td style="font-family:monospace;">CID-2024-0847</td>
+                                            <td>Dec 15, 2024</td>
+                                            <td><span class="badge badge-active">Active</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>John Rivera</strong></td>
+                                            <td style="font-family:monospace;">CID-2024-0846</td>
+                                            <td>Dec 14, 2024</td>
+                                            <td><span class="badge badge-pending">Pending</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ana Cruz</strong></td>
+                                            <td style="font-family:monospace;">CID-2024-0845</td>
+                                            <td>Dec 14, 2024</td>
+                                            <td><span class="badge badge-active">Active</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pedro Garcia</strong></td>
+                                            <td style="font-family:monospace;">CID-2024-0844</td>
+                                            <td>Dec 13, 2024</td>
+                                            <td><span class="badge badge-active">Active</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Lisa Mendoza</strong></td>
+                                            <td style="font-family:monospace;">CID-2024-0843</td>
+                                            <td>Dec 13, 2024</td>
+                                            <td><span class="badge badge-expired">Expired</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>🔔 Recent Activity</h2>
+                        </div>
+                        <div class="card-body">
+                            <ul class="activity-list">
+                                <li class="activity-item">
+                                    <div class="activity-icon new">✓</div>
+                                    <div class="activity-content">
+                                        <h4>New Registration</h4>
+                                        <p>Maria Santos registered</p>
+                                    </div>
+                                    <span class="activity-time">2m ago</span>
+                                </li>
+                                <li class="activity-item">
+                                    <div class="activity-icon update">↻</div>
+                                    <div class="activity-content">
+                                        <h4>ID Renewed</h4>
+                                        <p>Carlos Reyes ID renewed</p>
+                                    </div>
+                                    <span class="activity-time">15m ago</span>
+                                </li>
+                                <li class="activity-item">
+                                    <div class="activity-icon alert">!</div>
+                                    <div class="activity-content">
+                                        <h4>Verification Alert</h4>
+                                        <p>Failed scan attempt #3847</p>
+                                    </div>
+                                    <span class="activity-time">1h ago</span>
+                                </li>
+                                <li class="activity-item">
+                                    <div class="activity-icon delete">✕</div>
+                                    <div class="activity-content">
+                                        <h4>ID Suspended</h4>
+                                        <p>Account #2341 flagged</p>
+                                    </div>
+                                    <span class="activity-time">3h ago</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MEMBERS PAGE ===== -->
+            <div class="page-section" id="page-members">
+                <div class="page-header fade-in">
+                    <h1>Member Directory</h1>
+                    <p>Manage all community members and their ID cards</p>
+                </div>
+
+                <div class="toolbar fade-in">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search by name, ID number, or address..." id="memberSearch" onkeyup="filterMembers()">
+                    </div>
+                    <select class="filter-select" id="statusFilter" onchange="filterMembers()">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="expired">Expired</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Zones</option>
+                        <option>Zone A - North</option>
+                        <option>Zone B - South</option>
+                        <option>Zone C - East</option>
+                        <option>Zone D - West</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="showPage('register')">➕ Add Member</button>
+                </div>
+
+                <div class="card fade-in">
+                    <div class="card-body" style="padding:0;">
+                        <div class="table-container">
+                            <table id="membersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>ID Number</th>
+                                        <th>Zone</th>
+                                        <th>Contact</th>
+                                        <th>Registered</th>
+                                        <th>Expires</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-status="active">
+                                        <td><strong>Maria Santos</strong><br><small style="color:var(--text-gray)">Block 5, Lot 12</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0847</td>
+                                        <td>Zone A</td>
+                                        <td>+63 912 345 6789</td>
+                                        <td>Dec 15, 2024</td>
+                                        <td>Dec 15, 2025</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Maria Santos')">👁</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="showPage('id-cards')">💳</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="pending">
+                                        <td><strong>John Rivera</strong><br><small style="color:var(--text-gray)">Block 3, Lot 8</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0846</td>
+                                        <td>Zone B</td>
+                                        <td>+63 917 654 3210</td>
+                                        <td>Dec 14, 2024</td>
+                                        <td>—</td>
+                                        <td><span class="badge badge-pending">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="approveMember('John Rivera')">✓</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('John Rivera')">👁</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="active">
+                                        <td><strong>Ana Cruz</strong><br><small style="color:var(--text-gray)">Block 7, Lot 3</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0845</td>
+                                        <td>Zone A</td>
+                                        <td>+63 923 456 7890</td>
+                                        <td>Dec 14, 2024</td>
+                                        <td>Dec 14, 2025</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Ana Cruz')">👁</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="showPage('id-cards')">💳</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="active">
+                                        <td><strong>Pedro Garcia</strong><br><small style="color:var(--text-gray)">Block 1, Lot 22</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0844</td>
+                                        <td>Zone C</td>
+                                        <td>+63 935 678 9012</td>
+                                        <td>Dec 13, 2024</td>
+                                        <td>Dec 13, 2025</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Pedro Garcia')">👁</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="showPage('id-cards')">💳</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="expired">
+                                        <td><strong>Lisa Mendoza</strong><br><small style="color:var(--text-gray)">Block 9, Lot 1</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2023-0612</td>
+                                        <td>Zone D</td>
+                                        <td>+63 945 789 0123</td>
+                                        <td>Jun 12, 2023</td>
+                                        <td>Jun 12, 2024</td>
+                                        <td><span class="badge badge-expired">Expired</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" onclick="showToast('success','Renewal','Renewal notice sent to Lisa Mendoza')">🔄</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Lisa Mendoza')">👁</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="suspended">
+                                        <td><strong>Roberto Tan</strong><br><small style="color:var(--text-gray)">Block 2, Lot 15</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0790</td>
+                                        <td>Zone B</td>
+                                        <td>+63 956 890 1234</td>
+                                        <td>Nov 20, 2024</td>
+                                        <td>—</td>
+                                        <td><span class="badge badge-suspended">Suspended</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Roberto Tan')">👁</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-status="active">
+                                        <td><strong>Carmen Lim</strong><br><small style="color:var(--text-gray)">Block 4, Lot 7</small></td>
+                                        <td style="font-family:monospace;font-weight:600;">CID-2024-0835</td>
+                                        <td>Zone C</td>
+                                        <td>+63 967 901 2345</td>
+                                        <td>Dec 10, 2024</td>
+                                        <td>Dec 10, 2025</td>
+                                        <td><span class="badge badge-active">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary" onclick="viewMember('Carmen Lim')">👁</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="showPage('id-cards')">💳</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1rem;">
+                    <span style="font-size:0.85rem;color:var(--text-gray);">Showing 7 of 2,847 members</span>
+                    <div style="display:flex;gap:4px;">
+                        <button class="btn btn-sm btn-secondary">← Prev</button>
+                        <button class="btn btn-sm btn-primary">1</button>
+                        <button class="btn btn-sm btn-secondary">2</button>
+                        <button class="btn btn-sm btn-secondary">3</button>
+                        <button class="btn btn-sm btn-secondary">...</button>
+                        <button class="btn btn-sm btn-secondary">407</button>
+                        <button class="btn btn-sm btn-secondary">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== REGISTER PAGE ===== -->
+            <div class="page-section" id="page-register">
+                <div class="page-header fade-in">
+                    <h1>Register New Member</h1>
+                    <p>Fill in the details below to register a new community member</p>
+                </div>
+
+                <div class="grid-2 fade-in">
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>👤 Personal Information</h2>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex;gap:1.5rem;margin-bottom:1.5rem;">
+                                    <div class="photo-upload" onclick="showToast('info','Photo','Photo upload feature - click to upload photo')">
+                                        <div class="upload-icon">📷</div>
+                                        <span>Upload Photo<br>(2x2)</span>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div class="form-group">
+                                            <label>First Name <span class="required">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Enter first name" id="regFirstName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Middle Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter middle name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Last Name <span class="required">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Enter last name" id="regLastName">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date of Birth <span class="required">*</span></label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Gender <span class="required">*</span></label>
+                                        <select class="form-control">
+                                            <option value="">Select gender</option>
+                                            <option>Male</option>
+                                            <option>Female</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Civil Status</label>
+                                        <select class="form-control">
+                                            <option value="">Select status</option>
+                                            <option>Single</option>
+                                            <option>Married</option>
+                                            <option>Widowed</option>
+                                            <option>Separated</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Blood Type</label>
+                                        <select class="form-control">
+                                            <option value="">Select blood type</option>
+                                            <option>A+</option>
+                                            <option>A-</option>
+                                            <option>B+</option>
+                                            <option>B-</option>
+                                            <option>AB+</option>
+                                            <option>AB-</option>
+                                            <option>O+</option>
+                                            <option>O-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>📍 Address & Contact</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Complete Address <span class="required">*</span></label>
+                                    <input type="text" class="form-control" placeholder="House/Unit No., Street, Subdivision">
+                                </div>
+                                <div class="form-row-3">
+                                    <div class="form-group">
+                                        <label>Block</label>
+                                        <input type="text" class="form-control" placeholder="Block #">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Lot</label>
+                                        <input type="text" class="form-control" placeholder="Lot #">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Zone <span class="required">*</span></label>
+                                        <select class="form-control">
+                                            <option value="">Select Zone</option>
+                                            <option>Zone A - North</option>
+                                            <option>Zone B - South</option>
+                                            <option>Zone C - East</option>
+                                            <option>Zone D - West</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Mobile Number <span class="required">*</span></label>
+                                        <input type="tel" class="form-control" placeholder="+63 XXX XXX XXXX">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" class="form-control" placeholder="email@example.com">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>🆘 Emergency Contact</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Contact Person</label>
+                                        <input type="text" class="form-control" placeholder="Full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Relationship</label>
+                                        <input type="text" class="form-control" placeholder="e.g., Spouse, Parent">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Number</label>
+                                    <input type="tel" class="form-control" placeholder="+63 XXX XXX XXXX">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:12px;margin-top:1rem;">
+                            <button class="btn btn-primary" onclick="registerMember()">📝 Register Member</button>
+                            <button class="btn btn-secondary" onclick="showPage('dashboard')">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>💳 ID Card Preview</h2>
+                            </div>
+                            <div class="card-body" style="display:flex;justify-content:center;padding:2rem;">
+                                <div class="id-card">
+                                    <div class="id-card-top">
+                                        <div class="id-card-org">
+                                            <div class="org-logo">🏘️</div>
+                                            <div>
+                                                <h3>Greenville Community</h3>
+                                                <small>Official Smart ID Card</small>
+                                            </div>
+                                        </div>
+                                        <div class="id-card-chip">💳</div>
+                                    </div>
+                                    <div class="id-card-body">
+                                        <div class="id-card-photo">👤</div>
+                                        <div class="id-card-details">
+                                            <h2 id="previewName">Juan Dela Cruz</h2>
+                                            <div class="detail-row">
+                                                <span class="label">DOB:</span>
+                                                <span class="value">Jan 15, 1990</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Gender:</span>
+                                                <span class="value">Male</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Zone:</span>
+                                                <span class="value">Zone A - North</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Address:</span>
+                                                <span class="value">Blk 5, Lot 12</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Blood:</span>
+                                                <span class="value">O+</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Valid:</span>
+                                                <span class="value">Dec 2024 - Dec 2025</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="id-card-bottom">
+                                        <div>
+                                            <div class="id-card-number">CID-2024-0848</div>
+                                            <div style="font-size:0.65rem;opacity:0.7;margin-top:2px;">Issued: Dec 15, 2024</div>
+                                        </div>
+                                        <div class="id-card-qr">
+                                            <div class="qr-grid">
+                                                <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                                <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                <div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div>
+                                                <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                                <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>📋 Registration Checklist</h2>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex;flex-direction:column;gap:10px;">
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                        <input type="checkbox" checked> <span>Valid Government ID</span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                        <input type="checkbox" checked> <span>Proof of Residency</span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                        <input type="checkbox"> <span>2x2 Photo (white background)</span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                        <input type="checkbox"> <span>Community Clearance</span>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                        <input type="checkbox"> <span>Registration Fee Paid</span>
+                                    </label>
+                                </div>
+                                <div style="margin-top:16px;">
+                                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px;">
+                                        <span>Completion</span>
+                                        <span style="font-weight:600;">40%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill blue" style="width:40%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ID CARDS PAGE ===== -->
+            <div class="page-section" id="page-id-cards">
+                <div class="page-header fade-in">
+                    <h1>ID Card Management</h1>
+                    <p>View, print, and manage community ID cards</p>
+                </div>
+
+                <div class="toolbar fade-in">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search member ID...">
+                    </div>
+                    <button class="btn btn-primary" onclick="showToast('info','Print','Preparing batch print job...')">🖨️ Batch Print</button>
+                    <button class="btn btn-secondary">📥 Export</button>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:2rem;" class="fade-in">
+                    <!-- Card 1 -->
+                    <div>
+                        <div class="id-card" style="margin-bottom:1rem;">
+                            <div class="id-card-top">
+                                <div class="id-card-org">
+                                    <div class="org-logo">🏘️</div>
+                                    <div>
+                                        <h3>Greenville Community</h3>
+                                        <small>Official Smart ID Card</small>
+                                    </div>
+                                </div>
+                                <div class="id-card-chip">💳</div>
+                            </div>
+                            <div class="id-card-body">
+                                <div class="id-card-photo">👩</div>
+                                <div class="id-card-details">
+                                    <h2>Maria Santos</h2>
+                                    <div class="detail-row"><span class="label">DOB:</span><span class="value">Mar 22, 1985</span></div>
+                                    <div class="detail-row"><span class="label">Gender:</span><span class="value">Female</span></div>
+                                    <div class="detail-row"><span class="label">Zone:</span><span class="value">Zone A - North</span></div>
+                                    <div class="detail-row"><span class="label">Address:</span><span class="value">Blk 5, Lot 12</span></div>
+                                    <div class="detail-row"><span class="label">Blood:</span><span class="value">A+</span></div>
+                                    <div class="detail-row"><span class="label">Valid:</span><span class="value">Dec 2024 - Dec 2025</span></div>
+                                </div>
+                            </div>
+                            <div class="id-card-bottom">
+                                <div>
+                                    <div class="id-card-number">CID-2024-0847</div>
+                                    <div style="font-size:0.65rem;opacity:0.7;margin-top:2px;">Issued: Dec 15, 2024</div>
+                                </div>
+                                <div class="id-card-qr">
+                                    <div class="qr-grid">
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;justify-content:center;">
+                            <button class="btn btn-sm btn-primary" onclick="showToast('success','Print','ID Card sent to printer')">🖨️ Print</button>
+                            <button class="btn btn-sm btn-secondary">📥 Download</button>
+                            <button class="btn btn-sm btn-secondary">🔄 Renew</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div>
+                        <div class="id-card" style="margin-bottom:1rem;background:linear-gradient(145deg, #2d9249, #1e7e34);">
+                            <div class="id-card-top">
+                                <div class="id-card-org">
+                                    <div class="org-logo">🏘️</div>
+                                    <div>
+                                        <h3>Greenville Community</h3>
+                                        <small>Senior Citizen ID</small>
+                                    </div>
+                                </div>
+                                <div class="id-card-chip">💳</div>
+                            </div>
+                            <div class="id-card-body">
+                                <div class="id-card-photo">👨</div>
+                                <div class="id-card-details">
+                                    <h2>Pedro Garcia</h2>
+                                    <div class="detail-row"><span class="label">DOB:</span><span class="value">Jun 08, 1958</span></div>
+                                    <div class="detail-row"><span class="label">Gender:</span><span class="value">Male</span></div>
+                                    <div class="detail-row"><span class="label">Zone:</span><span class="value">Zone C - East</span></div>
+                                    <div class="detail-row"><span class="label">Address:</span><span class="value">Blk 1, Lot 22</span></div>
+                                    <div class="detail-row"><span class="label">Blood:</span><span class="value">B+</span></div>
+                                    <div class="detail-row"><span class="label">Valid:</span><span class="value">Dec 2024 - Dec 2025</span></div>
+                                </div>
+                            </div>
+                            <div class="id-card-bottom">
+                                <div>
+                                    <div class="id-card-number">CID-2024-0844</div>
+                                    <div style="font-size:0.65rem;opacity:0.7;margin-top:2px;">Issued: Dec 13, 2024</div>
+                                </div>
+                                <div class="id-card-qr">
+                                    <div class="qr-grid">
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                        <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;justify-content:center;">
+                            <button class="btn btn-sm btn-primary" onclick="showToast('success','Print','ID Card sent to printer')">🖨️ Print</button>
+                            <button class="btn btn-sm btn-secondary">📥 Download</button>
+                            <button class="btn btn-sm btn-secondary">🔄 Renew</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== VERIFY PAGE ===== -->
+            <div class="page-section" id="page-verify">
+                <div class="page-header fade-in">
+                    <h1>Verify ID Card</h1>
+                    <p>Scan QR code or enter ID number to verify membership</p>
+                </div>
+
+                <div class="grid-2 fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📱 QR Code Scanner</h2>
+                        </div>
+                        <div class="card-body" style="text-align:center;">
+                            <div class="scanner-area">
+                                <div class="scanner-corners">
+                                    <div class="corner tl"></div>
+                                    <div class="corner tr"></div>
+                                    <div class="corner bl"></div>
+                                    <div class="corner br"></div>
+                                </div>
+                                <div class="scanner-line"></div>
+                                <div class="scanner-text">📷 Point camera at QR code</div>
+                            </div>
+                            <p style="margin-top:1rem;font-size:0.85rem;color:var(--text-gray);">Position the QR code within the frame</p>
+                            <button class="btn btn-primary" style="margin-top:1rem;" onclick="simulateVerification(true)">📷 Start Scanner</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>🔢 Manual Verification</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Enter ID Number</label>
+                                    <input type="text" class="form-control" placeholder="CID-XXXX-XXXX" id="verifyIdInput" style="font-family:monospace;font-size:1.1rem;text-align:center;letter-spacing:2px;">
+                                </div>
+                                <button class="btn btn-primary" style="width:100%;" onclick="manualVerify()">✅ Verify ID</button>
+                            </div>
+                        </div>
+
+                        <div class="card" id="verificationResult" style="display:none;">
+                            <div class="card-body">
+                                <div class="verification-result" id="verifyResultContent">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>📊 Today's Verifications</h2>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex;gap:1.5rem;text-align:center;">
+                                    <div style="flex:1;">
+                                        <div style="font-size:2rem;font-weight:700;color:var(--secondary);">142</div>
+                                        <div style="font-size:0.8rem;color:var(--text-gray);">Successful</div>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div style="font-size:2rem;font-weight:700;color:var(--danger);">8</div>
+                                        <div style="font-size:0.8rem;color:var(--text-gray);">Failed</div>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div style="font-size:2rem;font-weight:700;color:var(--primary);">150</div>
+                                        <div style="font-size:0.8rem;color:var(--text-gray);">Total</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== REPORTS PAGE ===== -->
+            <div class="page-section" id="page-reports">
+                <div class="page-header fade-in">
+                    <h1>Reports & Analytics</h1>
+                    <p>Community membership insights and data analytics</p>
+                </div>
+
+                <div class="toolbar fade-in">
+                    <select class="filter-select">
+                        <option>Last 30 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>This Year</option>
+                        <option>All Time</option>
+                    </select>
+                    <button class="btn btn-secondary">📥 Export Report</button>
+                    <button class="btn btn-secondary">🖨️ Print Report</button>
+                </div>
+
+                <div class="stats-grid fade-in">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📝</div>
+                        <div class="stat-info">
+                            <h3>262</h3>
+                            <p>New Registrations</p>
+                            <div class="trend up">↑ 15% vs previous period</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">🔄</div>
+                        <div class="stat-info">
+                            <h3>89</h3>
+                            <p>Renewals</p>
+                            <div class="trend up">↑ 22% vs previous period</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">✅</div>
+                        <div class="stat-info">
+                            <h3>4,250</h3>
+                            <p>Verifications</p>
+                            <div class="trend up">↑ 8% vs previous period</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">⚠️</div>
+                        <div class="stat-info">
+                            <h3>23</h3>
+                            <p>Issues Reported</p>
+                            <div class="trend down">↓ 12% vs previous period</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2 fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📊 Monthly Registration Trends</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder" style="margin-bottom:30px;">
+                                <div class="chart-bar" style="height:30%"><span class="bar-value">45</span><span class="bar-label">Jul</span></div>
+                                <div class="chart-bar" style="height:45%"><span class="bar-value">68</span><span class="bar-label">Aug</span></div>
+                                <div class="chart-bar" style="height:55%"><span class="bar-value">82</span><span class="bar-label">Sep</span></div>
+                                <div class="chart-bar" style="height:40%"><span class="bar-value">60</span><span class="bar-label">Oct</span></div>
+                                <div class="chart-bar" style="height:70%"><span class="bar-value">95</span><span class="bar-label">Nov</span></div>
+                                <div class="chart-bar" style="height:85%"><span class="bar-value">112</span><span class="bar-label">Dec</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>🗺️ Distribution by Zone</h2>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:16px;">
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;">
+                                        <span>Zone A - North</span>
+                                        <span style="font-weight:600;">842 (29.6%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill blue" style="width:29.6%"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;">
+                                        <span>Zone B - South</span>
+                                        <span style="font-weight:600;">756 (26.6%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill green" style="width:26.6%"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;">
+                                        <span>Zone C - East</span>
+                                        <span style="font-weight:600;">698 (24.5%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill yellow" style="width:24.5%"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;">
+                                        <span>Zone D - West</span>
+                                        <span style="font-weight:600;">551 (19.3%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill blue" style="width:19.3%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ACCESS LOG PAGE ===== -->
+            <div class="page-section" id="page-access-log">
+                <div class="page-header fade-in">
+                    <h1>Access Log</h1>
+                    <p>Track all ID verification and access activities</p>
+                </div>
+
+                <div class="toolbar fade-in">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search by name or ID...">
+                    </div>
+                    <select class="filter-select">
+                        <option>All Activities</option>
+                        <option>Gate Access</option>
+                        <option>Verification</option>
+                        <option>Registration</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Today</option>
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                </div>
+
+                <div class="card fade-in">
+                    <div class="card-body" style="padding:0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Member</th>
+                                    <th>ID Number</th>
+                                    <th>Activity</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="white-space:nowrap;">10:45 AM</td>
+                                    <td><strong>Maria Santos</strong></td>
+                                    <td style="font-family:monospace;">CID-2024-0847</td>
+                                    <td>Gate Access</td>
+                                    <td>Main Gate</td>
+                                    <td><span class="badge badge-active">Granted</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space:nowrap;">10:32 AM</td>
+                                    <td><strong>Pedro Garcia</strong></td>
+                                    <td style="font-family:monospace;">CID-2024-0844</td>
+                                    <td>ID Verification</td>
+                                    <td>Admin Office</td>
+                                    <td><span class="badge badge-active">Verified</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space:nowrap;">10:18 AM</td>
+                                    <td><strong>Unknown</strong></td>
+                                    <td style="font-family:monospace;">CID-2023-9999</td>
+                                    <td>Gate Access</td>
+                                    <td>Side Gate B</td>
+                                    <td><span class="badge badge-expired">Denied</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space:nowrap;">09:55 AM</td>
+                                    <td><strong>Ana Cruz</strong></td>
+                                    <td style="font-family:monospace;">CID-2024-0845</td>
+                                    <td>Gate Access</td>
+                                    <td>Main Gate</td>
+                                    <td><span class="badge badge-active">Granted</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space:nowrap;">09:41 AM</td>
+                                    <td><strong>Carmen Lim</strong></td>
+                                    <td style="font-family:monospace;">CID-2024-0835</td>
+                                    <td>Facility Access</td>
+                                    <td>Clubhouse</td>
+                                    <td><span class="badge badge-active">Granted</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space:nowrap;">09:15 AM</td>
+                                    <td><strong>Roberto Tan</strong></td>
+                                    <td style="font-family:monospace;">CID-2024-0790</td>
+                                    <td>Gate Access</td>
+                                    <td>Main Gate</td>
+                                    <td><span class="badge badge-suspended">Blocked</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SETTINGS PAGE ===== -->
+            <div class="page-section" id="page-settings">
+                <div class="page-header fade-in">
+                    <h1>Settings</h1>
+                    <p>System configuration and preferences</p>
+                </div>
+
+                <div class="grid-2 fade-in">
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>🏘️ Community Settings</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Community Name</label>
+                                    <input type="text" class="form-control" value="Greenville Community">
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input type="text" class="form-control" value="123 Main Street, Metro City">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Contact Number</label>
+                                        <input type="text" class="form-control" value="+63 2 8123 4567">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="text" class="form-control" value="admin@greenville.com">
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="showToast('success','Settings','Community settings saved successfully!')">💾 Save Changes</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>💳 ID Card Settings</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>ID Prefix</label>
+                                        <input type="text" class="form-control" value="CID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Validity Period</label>
+                                        <select class="form-control">
+                                            <option>1 Year</option>
+                                            <option>2 Years</option>
+                                            <option>3 Years</option>
+                                            <option>5 Years</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Card Theme Color</label>
+                                    <div style="display:flex;gap:10px;margin-top:4px;">
+                                        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#1a73e8,#1557b0);cursor:pointer;border:3px solid var(--primary);" title="Blue"></div>
+                                        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#2d9249,#1e7e34);cursor:pointer;" title="Green"></div>
+                                        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#7b1fa2,#4a148c);cursor:pointer;" title="Purple"></div>
+                                        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#d84315,#bf360c);cursor:pointer;" title="Red"></div>
+                                        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#37474f,#263238);cursor:pointer;" title="Dark"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>🔧 System Preferences</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Auto-approve Registrations</h4>
+                                        <p>Automatically approve new member registrations</p>
+                                    </div>
+                                    <div class="toggle" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Email Notifications</h4>
+                                        <p>Send email alerts for new registrations</p>
+                                    </div>
+                                    <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>SMS Notifications</h4>
+                                        <p>Send SMS for ID expiry reminders</p>
+                                    </div>
+                                    <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>QR Code Verification</h4>
+                                        <p>Enable QR code scanning for verification</p>
+                                    </div>
+                                    <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Gate Access Logging</h4>
+                                        <p>Log all gate access attempts</p>
+                                    </div>
+                                    <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Two-Factor Authentication</h4>
+                                        <p>Require 2FA for admin login</p>
+                                    </div>
+                                    <div class="toggle" onclick="this.classList.toggle('active')"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>👤 Admin Account</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Admin Name</label>
+                                    <input type="text" class="form-control" value="Admin User">
+                                </div>
+                                <div class="form-group">
+                                    <label>Admin Email</label>
+                                    <input type="email" class="form-control" value="admin@greenville.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Change Password</label>
+                                    <input type="password" class="form-control" placeholder="Enter new password">
+                                </div>
+                                <button class="btn btn-primary" onclick="showToast('success','Account','Admin account updated!')">💾 Update Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== HELP PAGE ===== -->
+            <div class="page-section" id="page-help">
+                <div class="page-header fade-in">
+                    <h1>Help & Support</h1>
+                    <p>Get help with using the Community Smart ID System</p>
+                </div>
+
+                <div class="grid-2 fade-in">
+                    <div>
+                        <div class="card">
+                            <div class="card-header"><h2>❓ Frequently Asked Questions</h2></div>
+                            <div class="card-body">
+                                <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+                                    <summary style="font-weight:600;font-size:0.92rem;">How do I register a new member?</summary>
+                                    <p style="margin-top:8px;font-size:0.88rem;color:var(--text-gray);">Navigate to "Register New" from the sidebar. Fill in the required personal information, address, and contact details. Upload a 2x2 photo and submit the form.</p>
+                                </details>
+                                <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+                                    <summary style="font-weight:600;font-size:0.92rem;">How to verify an ID card?</summary>
+                                    <p style="margin-top:8px;font-size:0.88rem;color:var(--text-gray);">Go to "Verify ID" page. You can either scan the QR code using the built-in scanner or manually enter the ID number for verification.</p>
+                                </details>
+                                <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+                                    <summary style="font-weight:600;font-size:0.92rem;">How to renew an expired ID?</summary>
+                                    <p style="margin-top:8px;font-size:0.88rem;color:var(--text-gray);">Find the member in the Member Directory, click the renew button (🔄), verify their information, and process the renewal fee.</p>
+                                </details>
+                                <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+                                    <summary style="font-weight:600;font-size:0.92rem;">How to print ID cards?</summary>
+                                    <p style="margin-top:8px;font-size:0.88rem;color:var(--text-gray);">Go to "ID Cards" page, select the member's card, and click the Print button. You can also batch print multiple cards at once.</p>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-header"><h2>📞 Contact Support</h2></div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <input type="text" class="form-control" placeholder="Enter subject">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control" placeholder="Describe your issue..."></textarea>
+                                </div>
+                                <button class="btn btn-primary" onclick="showToast('success','Support','Your message has been sent. We will respond within 24 hours.')">📧 Send Message</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h2>📌 Quick Links</h2></div>
+                            <div class="card-body">
+                                <div style="display:flex;flex-direction:column;gap:8px;">
+                                    <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.92rem;">📖 User Manual (PDF)</a>
+                                    <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.92rem;">🎥 Video Tutorials</a>
+                                    <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.92rem;">📋 System Requirements</a>
+                                    <a href="#" style="color:var(--primary);text-decoration:none;font-size:0.92rem;">🔄 Version History</a>
+                                </div>
+                                <div style="margin-top:1.5rem;padding:1rem;background:#f8f9fa;border-radius:8px;">
+                                    <p style="font-size:0.82rem;color:var(--text-gray);">
+                                        <strong>System Version:</strong> 2.4.1<br>
+                                        <strong>Last Updated:</strong> December 15, 2024<br>
+                                        <strong>Support Email:</strong> support@smartid.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="memberModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Member Details</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="profile-header" style="padding:0;margin-bottom:1.5rem;">
+                    <div class="profile-avatar" style="width:80px;height:80px;font-size:2rem;">👤</div>
+                    <div class="profile-info">
+                        <h2 id="modalMemberName">Maria Santos</h2>
+                        <div class="id-number">CID-2024-0847</div>
+                        <div class="profile-tags">
+                            <span class="badge badge-active">Active</span>
+                            <span class="badge" style="background:#e8f0fe;color:var(--primary);">Zone A</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Address</p>
+                        <p style="font-size:0.92rem;">Block 5, Lot 12, Phase 1</p>
+                    </div>
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Contact</p>
+                        <p style="font-size:0.92rem;">+63 912 345 6789</p>
+                    </div>
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Date of Birth</p>
+                        <p style="font-size:0.92rem;">March 22, 1985</p>
+                    </div>
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Blood Type</p>
+                        <p style="font-size:0.92rem;">A+</p>
+                    </div>
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Registered</p>
+                        <p style="font-size:0.92rem;">December 15, 2024</p>
+                    </div>
+                    <div>
+                        <p style="font-size:0.78rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;">Expires</p>
+                        <p style="font-size:0.92rem;">December 15, 2025</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="showPage('id-cards');closeModal();">💳 View ID Card</button>
+                <button class="btn btn-danger btn-sm" onclick="showToast('error','Suspended','Member has been suspended');closeModal();">Suspend</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== PAGE NAVIGATION =====
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show target page
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Update navbar active state
+            document.querySelectorAll('.navbar-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Close sidebar on mobile
+            document.getElementById('sidebar').classList.remove('open');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // ===== SIDEBAR TOGGLE =====
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // ===== TOAST NOTIFICATIONS =====
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <div class="toast-message">
+                    <strong>${title}</strong>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // ===== MEMBER REGISTRATION =====
+        function registerMember() {
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+
+            if (!firstName || !lastName) {
+                showToast('error', 'Validation Error', 'Please fill in all required fields');
+                return;
+            }
+
+            // Generate random ID
+            const newId = 'CID-2024-' + String(Math.floor(Math.random() * 9000) + 1000);
+
+            showToast('success', 'Registration Successful', `${firstName} ${lastName} has been registered with ID: ${newId}`);
+
+            // Clear form
+            document.getElementById('regFirstName').value = '';
+            document.getElementById('regLastName').value = '';
+
+            // Update preview name
+            document.getElementById('previewName').textContent = `${firstName} ${lastName}`;
+        }
+
+        // ===== MEMBER SEARCH/FILTER =====
+        function filterMembers() {
+            const searchText = document.getElementById('memberSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#membersTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const status = row.getAttribute('data-status');
+                const matchesSearch = text.includes(searchText);
+                const matchesStatus = !statusFilter || status === statusFilter;
+
+                row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+            });
+        }
+
+        // ===== VIEW MEMBER =====
+        function viewMember(name) {
+            document.getElementById('modalMemberName').textContent = name;
+            document.getElementById('modalTitle').textContent = `${name} - Member Details`;
+            document.getElementById('memberModal').classList.add('active');
+        }
+
+        // ===== APPROVE MEMBER =====
+        function approveMember(name) {
+            showToast('success', 'Approved', `${name}'s registration has been approved!`);
+        }
+
+        // ===== CLOSE MODAL =====
+        function closeModal() {
+            document.getElementById('memberModal').classList.remove('active');
+        }
+
+        // ===== VERIFICATION =====
+        function simulateVerification(success) {
+            setTimeout(() => {
+                const resultDiv = document.getElementById('verificationResult');
+                const content = document.getElementById('verifyResultContent');
+                resultDiv.style.display = 'block';
+
+                if (success) {
+                    content.innerHTML = `
+                        <div class="verify-icon success">✅</div>
+                        <h2 style="color:#1e8e3e;margin-bottom:8px;">Identity Verified!</h2>
+                        <p style="color:var(--text-gray);margin-bottom:1rem;">Member identity has been confirmed</p>
+                        <div style="text-align:left;background:#f8f9fa;border-radius:10px;padding:1rem;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;">
+                                <span style="color:var(--text-gray);">Name:</span>
+                                <strong>Maria Santos</strong>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;">
+                                <span style="color:var(--text-gray);">ID Number:</span>
+                                <strong style="font-family:monospace;">CID-2024-0847</strong>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;">
+                                <span style="color:var(--text-gray);">Status:</span>
+                                <span class="badge badge-active">Active</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.88rem;">
+                                <span style="color:var(--text-gray);">Valid Until:</span>
+                                <strong>Dec 15, 2025</strong>
+                            </div>
+                        </div>
+                    `;
+                    showToast('success', 'Verified', 'ID Card successfully verified');
+                }
+            }, 1500);
+        }
+
+        function manualVerify() {
+            const idInput = document.getElementById('verifyIdInput').value.trim();
+
+            if (!idInput) {
+                showToast('error', 'Error', 'Please enter an ID number');
+                return;
+            }
+
+            const resultDiv = document.getElementById('verificationResult');
+            const content = document.getElementById('verifyResultContent');
+            resultDiv.style.display = 'block';
+
+            // Simulate valid IDs
+            const validIds = ['CID-2024-0847', 'CID-2024-0846', 'CID-2024-0845', 'CID-2024-0844', 'CID-2024-0835'];
+
+            if (validIds.includes(idInput.toUpperCase())) {
+                content.innerHTML = `
+                    <div class="verify-icon success">✅</div>
+                    <h2 style="color:#1e8e3e;margin-bottom:8px;">Identity Verified!</h2>
+                    <p style="color:var(--text-gray);margin-bottom:1rem;">Member identity confirmed</p>
+                    <div style="text-align:left;background:#f8f9fa;border-radius:10px;padding:1rem;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;">
+                            <span style="color:var(--text-gray);">ID Number:</span>
+                            <strong style="font-family:monospace;">${idInput.toUpperCase()}</strong>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.88rem;">
+                            <span style="color:var(--text-gray);">Status:</span>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                    </div>
+                `;
+                showToast('success', 'Verified', `ID ${idInput} has been verified`);
+            } else {
+                content.innerHTML = `
+                    <div class="verify-icon fail">❌</div>
+                    <h2 style="color:#d93025;margin-bottom:8px;">Verification Failed</h2>
+                    <p style="color:var(--text-gray);">No matching ID found in the system. The ID may be invalid, expired, or not registered.</p>
+                `;
+                showToast('error', 'Not Found', `ID ${idInput} not found in system`);
+            }
+        }
+
+        // ===== CLOSE MODAL ON OUTSIDE CLICK =====
+        document.getElementById('memberModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ===== KEYBOARD SHORTCUT =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // ===== LIVE PREVIEW FOR REGISTRATION =====
+        document.getElementById('regFirstName')?.addEventListener('input', updatePreview);
+        document.getElementById('regLastName')?.addEventListener('input', updatePreview);
+
+        function updatePreview() {
+            const first = document.getElementById('regFirstName').value || 'Juan';
+            const last = document.getElementById('regLastName').value || 'Dela Cruz';
+            document.getElementById('previewName').textContent = `${first} ${last}`;
+        }
+    </script>
+
+</body>
+</html>
