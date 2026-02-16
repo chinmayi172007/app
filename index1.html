@@ -1,0 +1,3312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Smart ID System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #34a853;
+            --accent: #fbbc04;
+            --danger: #ea4335;
+            --bg-light: #f0f4f8;
+            --bg-white: #ffffff;
+            --text-dark: #202124;
+            --text-gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ========================================
+           LOGIN & SIGNUP PAGE STYLES
+           ======================================== */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: authBgRotate 30s linear infinite;
+        }
+
+        @keyframes authBgRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-left .brand-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .auth-left h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .auth-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .auth-features {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .auth-feature .feat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .auth-feature span {
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .auth-right {
+            width: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-card {
+            background: var(--bg-white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .auth-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .auth-card .subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .auth-card .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .auth-card label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+        }
+
+        .auth-card .input-wrapper {
+            position: relative;
+        }
+
+        .auth-card .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: var(--text-gray);
+        }
+
+        .auth-card .form-control {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+        .auth-card .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        .auth-card .form-control.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(234,67,53,0.1);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.78rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .auth-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .auth-options a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .auth-options a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .btn-login.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            gap: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .auth-divider span {
+            font-size: 0.82rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .social-btn span {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            border-radius: 2px;
+            background: #e8eaed;
+            transition: var(--transition);
+        }
+
+        .strength-bar.active.weak { background: var(--danger); }
+        .strength-bar.active.medium { background: var(--accent); }
+        .strength-bar.active.strong { background: var(--secondary); }
+
+        .strength-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .strength-text.weak { color: var(--danger); }
+        .strength-text.medium { color: #e37400; }
+        .strength-text.strong { color: var(--secondary); }
+
+        /* Floating shapes for auth background */
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            animation: floatShape 15s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) { width: 200px; height: 200px; top: 10%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 150px; height: 150px; top: 60%; left: 5%; animation-delay: 3s; }
+        .shape:nth-child(3) { width: 100px; height: 100px; top: 30%; left: 30%; animation-delay: 6s; }
+        .shape:nth-child(4) { width: 250px; height: 250px; top: 70%; left: 40%; animation-delay: 9s; }
+        .shape:nth-child(5) { width: 120px; height: 120px; top: 20%; left: 55%; animation-delay: 2s; }
+
+        @keyframes floatShape {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* ========================================
+           MAIN APPLICATION STYLES (after login)
+           ======================================== */
+        .app-wrapper {
+            display: none;
+        }
+
+        .app-wrapper.active {
+            display: block;
+        }
+
+        .auth-wrapper.hidden {
+            display: none;
+        }
+
+        /* ===== HEADER / NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), #1557b0);
+            color: white;
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .navbar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-links a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .navbar-links a:hover,
+        .navbar-links a.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-user .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            min-width: 220px;
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: fadeDown 0.2s ease;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dropdown-header strong {
+            display: block;
+            color: var(--text-dark);
+            font-size: 0.92rem;
+        }
+
+        .dropdown-header small {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.88rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-menu .logout-btn {
+            border-top: 1px solid var(--border);
+            color: var(--danger);
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 8px;
+        }
+
+        .notification-bell .badge-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 2px 8px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-gray);
+            border-radius: 10px;
+            transition: var(--transition);
+            font-size: 0.92rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .sidebar-menu a.active {
+            background: #e8f0fe;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-menu a .icon {
+            width: 22px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-section-title {
+            padding: 20px 28px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #9aa0a6;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--text-gray);
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue { background: #e8f0fe; color: var(--primary); }
+        .stat-icon.green { background: #e6f4ea; color: var(--secondary); }
+        .stat-icon.yellow { background: #fef7e0; color: #e37400; }
+        .stat-icon.red { background: #fce8e6; color: var(--danger); }
+        .stat-icon.purple { background: #f3e5f5; color: #7b1fa2; }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-info p {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .stat-info .trend {
+            font-size: 0.78rem;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .trend.up { color: var(--secondary); }
+        .trend.down { color: var(--danger); }
+
+        /* ===== CARD COMPONENT ===== */
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* ===== GRID LAYOUTS ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-active { background: #e6f4ea; color: #1e8e3e; }
+        .badge-pending { background: #fef7e0; color: #e37400; }
+        .badge-expired { background: #fce8e6; color: #d93025; }
+        .badge-suspended { background: #f1f3f4; color: #5f6368; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(26,115,232,0.3); }
+        .btn-secondary { background: #f1f3f4; color: var(--text-dark); }
+        .btn-secondary:hover { background: #e8eaed; }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-success:hover { background: #2d9249; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #d93025; }
+        .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        select.form-control { cursor: pointer; }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 42px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus { outline: none; border-color: var(--primary); }
+
+        /* ===== ID CARD ===== */
+        .id-card {
+            width: 400px;
+            background: linear-gradient(145deg, #1a73e8, #1557b0);
+            border-radius: 16px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .id-card-top {
+            padding: 20px 24px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .id-card-org {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .id-card-org .org-logo {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .id-card-org h3 { font-size: 0.85rem; font-weight: 700; line-height: 1.2; }
+        .id-card-org small { font-size: 0.68rem; opacity: 0.8; }
+        .id-card-chip { font-size: 2rem; opacity: 0.6; }
+
+        .id-card-body {
+            padding: 16px 24px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .id-card-photo {
+            width: 90px;
+            height: 110px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .id-card-details { flex: 1; }
+        .id-card-details h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+
+        .id-card-details .detail-row {
+            display: flex;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .id-card-details .detail-row .label { width: 70px; opacity: 0.7; flex-shrink: 0; }
+        .id-card-details .detail-row .value { font-weight: 600; }
+
+        .id-card-bottom {
+            background: rgba(0,0,0,0.15);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .id-card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .id-card-qr {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-cell { background: var(--text-dark); border-radius: 1px; }
+        .qr-cell.empty { background: white; }
+
+        /* ===== ACTIVITY LOG ===== */
+        .activity-list { list-style: none; }
+
+        .activity-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: flex-start;
+        }
+
+        .activity-item:last-child { border-bottom: none; }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.new { background: #e6f4ea; color: #1e8e3e; }
+        .activity-icon.update { background: #e8f0fe; color: var(--primary); }
+        .activity-icon.alert { background: #fef7e0; color: #e37400; }
+        .activity-icon.delete { background: #fce8e6; color: #d93025; }
+
+        .activity-content h4 { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+        .activity-content p { font-size: 0.8rem; color: var(--text-gray); }
+        .activity-time { font-size: 0.75rem; color: var(--text-gray); margin-left: auto; white-space: nowrap; }
+
+        /* ===== PHOTO UPLOAD ===== */
+        .photo-upload {
+            width: 150px;
+            height: 180px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-upload:hover { border-color: var(--primary); background: #e8f0fe; }
+        .photo-upload .upload-icon { font-size: 2rem; color: var(--text-gray); margin-bottom: 8px; }
+        .photo-upload span { font-size: 0.78rem; color: var(--text-gray); text-align: center; }
+
+        .photo-upload.has-photo {
+            border-style: solid;
+            border-color: var(--secondary);
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-white);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 { font-size: 1.2rem; }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f1f3f4;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover { background: #e8eaed; }
+        .modal-body { padding: 1.5rem; }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ===== SCANNER ===== */
+        .scanner-area {
+            width: 300px;
+            height: 300px;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan { 0% { top: 10%; } 50% { top: 85%; } 100% { top: 10%; } }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--secondary);
+            border-style: solid;
+        }
+
+        .corner.tl { top: 15px; left: 15px; border-width: 3px 0 0 3px; }
+        .corner.tr { top: 15px; right: 15px; border-width: 3px 3px 0 0; }
+        .corner.bl { bottom: 15px; left: 15px; border-width: 0 0 3px 3px; }
+        .corner.br { bottom: 15px; right: 15px; border-width: 0 3px 3px 0; }
+
+        .scanner-text { color: rgba(255,255,255,0.6); font-size: 0.85rem; z-index: 1; }
+
+        /* ===== VERIFY RESULT ===== */
+        .verify-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        .verify-icon.success { background: #e6f4ea; color: #1e8e3e; }
+        .verify-icon.fail { background: #fce8e6; color: #d93025; }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            height: 8px;
+            background: #e8eaed;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.blue { background: var(--primary); }
+        .progress-fill.green { background: var(--secondary); }
+        .progress-fill.yellow { background: var(--accent); }
+
+        /* ===== CHART ===== */
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), #6ab7ff);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            min-height: 20px;
+        }
+
+        .chart-bar:hover { opacity: 0.8; }
+        .chart-bar .bar-label { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-gray); white-space: nowrap; }
+        .chart-bar .bar-value { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 0.72rem; font-weight: 600; color: var(--text-dark); }
+
+        /* ===== DONUT CHART ===== */
+        .donut-chart {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center .number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .donut-center .label-text { font-size: 0.72rem; color: var(--text-gray); }
+
+        .legend { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* ===== TOGGLE ===== */
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: #dadce0;
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .toggle.active { background: var(--primary); }
+
+        .toggle::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active::after { left: 24px; }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .setting-item:last-child { border-bottom: none; }
+        .setting-info h4 { font-size: 0.92rem; font-weight: 600; }
+        .setting-info p { font-size: 0.8rem; color: var(--text-gray); margin-top: 2px; }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-white);
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .toast.success { border-color: var(--secondary); }
+        .toast.error { border-color: var(--danger); }
+        .toast.info { border-color: var(--primary); }
+        .toast.warning { border-color: var(--accent); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-icon { font-size: 1.2rem; }
+        .toast-message { flex: 1; }
+        .toast-message strong { display: block; font-size: 0.88rem; }
+        .toast-message span { font-size: 0.8rem; color: var(--text-gray); }
+
+        .toast-close {
+            cursor: pointer;
+            color: var(--text-gray);
+            font-size: 1rem;
+            padding: 4px;
+            border: none;
+            background: none;
+        }
+
+        /* ===== MEMBER ADDED SUCCESS ===== */
+        .success-animation {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-checkmark {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e6f4ea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 3rem;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== MEMBER COUNT ANIMATION ===== */
+        .count-up {
+            transition: all 0.5s ease;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            padding: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .auth-left { display: none; }
+            .auth-right { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .sidebar { position: fixed; left: -260px; top: 64px; z-index: 999; transition: var(--transition); box-shadow: var(--shadow-lg); }
+            .sidebar.open { left: 0; }
+            .navbar-links { display: none; }
+            .main-content { padding: 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .id-card { width: 100%; max-width: 400px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .auth-card { padding: 1.5rem; }
+        }
+
+        /* ===== FADE ANIMATION ===== */
+        .fade-in { animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SIDEBAR OVERLAY (Mobile) ===== */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 998;
+        }
+
+        .sidebar-overlay.show { display: block; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-gray);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================
+         LOGIN / SIGNUP PAGE
+         ======================================== -->
+    <div class="auth-wrapper" id="authWrapper">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <div class="auth-left">
+            <div class="brand-logo">🆔</div>
+            <h1>SmartID System</h1>
+            <p>A comprehensive community identification management platform for secure, efficient member registration and verification.</p>
+
+            <div class="auth-features">
+                <div class="auth-feature">
+                    <div class="feat-icon">🔒</div>
+                    <span>Secure Digital ID Management</span>
+                </div>
+                <div class="auth-feature">
+                    <div class="feat-icon">📱</div>
+                    <span>QR Code Verification</span>
+                </div>
+                <div class="auth-feature">
+                    <div class="feat-icon">👥</div>
+                    <span>Community Member Directory</span>
+                </div>
+                <div class="auth-feature">
+                    <div class="feat-icon">📊</div>
+                    <span>Analytics & Reporting</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <!-- LOGIN FORM -->
+            <div class="auth-card" id="loginForm">
+                <h2>Welcome Back 👋</h2>
+                <p class="subtitle">Sign in to your account to continue</p>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📧</span>
+                        <input type="email" class="form-control" id="loginEmail" placeholder="admin@community.com" value="admin@community.com">
+                    </div>
+                    <div class="error-message" id="loginEmailError">Please enter a valid email address</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" value="admin123">
+                        <button class="password-toggle" onclick="togglePassword('loginPassword', this)">👁</button>
+                    </div>
+                    <div class="error-message" id="loginPasswordError">Password must be at least 6 characters</div>
+                </div>
+
+                <div class="auth-options">
+                    <label>
+                        <input type="checkbox" checked> Remember me
+                    </label>
+                    <a href="#" onclick="showToast('info','Reset','Password reset link sent to your email')">Forgot Password?</a>
+                </div>
+
+                <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+                    <span class="btn-text">🔐 Sign In</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div class="social-login">
+                    <button class="social-btn" onclick="showToast('info','Google','Google sign-in coming soon')">
+                        🔵 <span>Google</span>
+                    </button>
+                    <button class="social-btn" onclick="showToast('info','Microsoft','Microsoft sign-in coming soon')">
+                        🟦 <span>Microsoft</span>
+                    </button>
+                    <button class="social-btn" onclick="showToast('info','SSO','SSO sign-in coming soon')">
+                        🔑 <span>SSO</span>
+                    </button>
+                </div>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="#" onclick="showSignup()">Create Account</a>
+                </div>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div class="auth-card" id="signupForm" style="display:none;">
+                <h2>Create Account ✨</h2>
+                <p class="subtitle">Register as a new system administrator</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" class="form-control" id="signupFirst" placeholder="First name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" class="form-control" id="signupLast" placeholder="Last name">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📧</span>
+                        <input type="email" class="form-control" id="signupEmail" placeholder="your@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Role</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🏷</span>
+                        <select class="form-control" style="padding-left:44px;" id="signupRole">
+                            <option value="">Select your role</option>
+                            <option value="admin">System Administrator</option>
+                            <option value="staff">Staff / Operator</option>
+                            <option value="guard">Security Guard</option>
+                            <option value="viewer">Viewer (Read Only)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" class="form-control" id="signupPassword" placeholder="Create a password" oninput="checkPasswordStrength(this.value)">
+                        <button class="password-toggle" onclick="togglePassword('signupPassword', this)">👁</button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength" style="display:none;">
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="str1"></div>
+                            <div class="strength-bar" id="str2"></div>
+                            <div class="strength-bar" id="str3"></div>
+                            <div class="strength-bar" id="str4"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" class="form-control" id="signupConfirm" placeholder="Confirm your password">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:0.85rem;color:var(--text-gray);">
+                        <input type="checkbox" id="agreeTerms" style="margin-top:3px;">
+                        I agree to the <a href="#" style="color:var(--primary);">Terms of Service</a> and <a href="#" style="color:var(--primary);">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button class="btn-login" onclick="handleSignup()">
+                    <span class="btn-text">🚀 Create Account</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="auth-footer" style="margin-top:1.5rem;">
+                    Already have an account? <a href="#" onclick="showLogin()">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         MAIN APPLICATION (After Login)
+         ======================================== -->
+    <div class="app-wrapper" id="appWrapper">
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <span class="hamburger" onclick="toggleSidebar()">☰</span>
+                <div class="navbar-brand">
+                    <div class="logo-icon">🆔</div>
+                    <div>
+                        <div>SmartID</div>
+                        <div style="font-size:0.65rem;opacity:0.8;font-weight:400;">Community Management</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-links">
+                <a class="active" onclick="showPage('dashboard')">Dashboard</a>
+                <a onclick="showPage('members')">Members</a>
+                <a onclick="showPage('register')">Register</a>
+                <a onclick="showPage('verify')">Verify</a>
+            </div>
+
+            <div class="navbar-user">
+                <div class="notification-bell" onclick="showToast('info','Notifications','3 new alerts pending')">
+                    🔔
+                    <span class="badge-count">3</span>
+                </div>
+                <div class="user-dropdown">
+                    <div class="avatar" onclick="toggleDropdown()" id="userAvatar">A</div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-header">
+                            <strong id="dropdownName">Admin User</strong>
+                            <small id="dropdownEmail">admin@community.com</small>
+                        </div>
+                        <a onclick="showPage('settings');toggleDropdown();">⚙️ Settings</a>
+                        <a onclick="showPage('help');toggleDropdown();">❓ Help & Support</a>
+                        <a class="logout-btn" onclick="handleLogout()">🚪 Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="app-container">
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar" id="sidebar">
+                <ul class="sidebar-menu">
+                    <div class="sidebar-section-title">Main</div>
+                    <li><a class="active" onclick="showPage('dashboard')" data-page="dashboard"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a onclick="showPage('members')" data-page="members"><span class="icon">👥</span> Members <span class="badge badge-active" id="memberCountBadge" style="margin-left:auto;font-size:0.7rem;">0</span></a></li>
+                    <li><a onclick="showPage('register')" data-page="register"><span class="icon">📝</span> Register New</a></li>
+                    <li><a onclick="showPage('id-cards')" data-page="id-cards"><span class="icon">💳</span> ID Cards</a></li>
+
+                    <div class="sidebar-section-title">Operations</div>
+                    <li><a onclick="showPage('verify')" data-page="verify"><span class="icon">✅</span> Verify ID</a></li>
+                    <li><a onclick="showPage('reports')" data-page="reports"><span class="icon">📈</span> Reports</a></li>
+                    <li><a onclick="showPage('access-log')" data-page="access-log"><span class="icon">📋</span> Access Log</a></li>
+
+                    <div class="sidebar-section-title">System</div>
+                    <li><a onclick="showPage('settings')" data-page="settings"><span class="icon">⚙️</span> Settings</a></li>
+                    <li><a onclick="showPage('help')" data-page="help"><span class="icon">❓</span> Help</a></li>
+                </ul>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="main-content">
+
+                <!-- ===== DASHBOARD ===== -->
+                <div class="page-section active" id="page-dashboard">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Dashboard</h1>
+                            <p>Welcome back, <span id="dashboardUser">Admin</span>! Here's your community overview.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="showPage('register')">➕ Add Member</button>
+                    </div>
+
+                    <div class="stats-grid fade-in">
+                        <div class="stat-card" onclick="showPage('members')">
+                            <div class="stat-icon blue">👥</div>
+                            <div class="stat-info">
+                                <h3 id="totalMembersCount">0</h3>
+                                <p>Total Members</p>
+                                <div class="trend up">↑ Live count</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">✅</div>
+                            <div class="stat-info">
+                                <h3 id="activeMembersCount">0</h3>
+                                <p>Active IDs</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">⏳</div>
+                            <div class="stat-info">
+                                <h3 id="pendingMembersCount">0</h3>
+                                <p>Pending Approval</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">🚫</div>
+                            <div class="stat-info">
+                                <h3 id="expiredMembersCount">0</h3>
+                                <p>Expired IDs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3 fade-in">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>📊 Registration Trends</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-placeholder" style="margin-bottom:30px;" id="dashboardChart">
+                                    <div class="chart-bar" style="height:45%"><span class="bar-value">28</span><span class="bar-label">Mon</span></div>
+                                    <div class="chart-bar" style="height:65%"><span class="bar-value">42</span><span class="bar-label">Tue</span></div>
+                                    <div class="chart-bar" style="height:35%"><span class="bar-value">18</span><span class="bar-label">Wed</span></div>
+                                    <div class="chart-bar" style="height:80%"><span class="bar-value">55</span><span class="bar-label">Thu</span></div>
+                                    <div class="chart-bar" style="height:55%"><span class="bar-value">35</span><span class="bar-label">Fri</span></div>
+                                    <div class="chart-bar" style="height:90%"><span class="bar-value">62</span><span class="bar-label">Sat</span></div>
+                                    <div class="chart-bar" style="height:40%"><span class="bar-value">22</span><span class="bar-label">Sun</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>🔔 Activity</h2>
+                            </div>
+                            <div class="card-body">
+                                <ul class="activity-list" id="activityLog">
+                                    <li class="activity-item">
+                                        <div class="activity-icon update">ℹ</div>
+                                        <div class="activity-content">
+                                            <h4>System Started</h4>
+                                            <p>SmartID system initialized</p>
+                                        </div>
+                                        <span class="activity-time">now</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <h2>🕐 Recent Members</h2>
+                            <button class="btn btn-sm btn-secondary" onclick="showPage('members')">View All</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>ID Number</th>
+                                            <th>Zone</th>
+                                            <th>Status</th>
+                                            <th>Registered</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentMembersTable">
+                                        <tr>
+                                            <td colspan="5" class="empty-state" style="padding:2rem;">
+                                                <div class="empty-icon">👥</div>
+                                                <h3>No members yet</h3>
+                                                <p>Start by adding your first community member</p>
+                                                <button class="btn btn-primary" onclick="showPage('register')">➕ Add First Member</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== MEMBERS PAGE ===== -->
+                <div class="page-section" id="page-members">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Member Directory</h1>
+                            <p>Manage all community members • <strong id="memberDirectoryCount">0</strong> total members</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="showPage('register')">➕ Add Member</button>
+                    </div>
+
+                    <div class="toolbar fade-in">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" placeholder="Search by name, ID number, or address..." id="memberSearch" oninput="filterMembers()">
+                        </div>
+                        <select class="filter-select" id="statusFilter" onchange="filterMembers()">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Expired">Expired</option>
+                        </select>
+                        <select class="filter-select" id="zoneFilter" onchange="filterMembers()">
+                            <option value="">All Zones</option>
+                            <option value="Zone A">Zone A - North</option>
+                            <option value="Zone B">Zone B - South</option>
+                            <option value="Zone C">Zone C - East</option>
+                            <option value="Zone D">Zone D - West</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="exportMembers()">📥 Export</button>
+                    </div>
+
+                    <div class="card fade-in">
+                        <div class="card-body" style="padding:0;">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Member</th>
+                                            <th>ID Number</th>
+                                            <th>Zone</th>
+                                            <th>Contact</th>
+                                            <th>Registered</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="membersTableBody">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== REGISTER PAGE ===== -->
+                <div class="page-section" id="page-register">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Register New Member</h1>
+                            <p>Fill in the details below to add a new community member</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 fade-in">
+                        <div>
+                            <div class="card">
+                                <div class="card-header"><h2>👤 Personal Information</h2></div>
+                                <div class="card-body">
+                                    <div style="display:flex;gap:1.5rem;margin-bottom:1.5rem;">
+                                        <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
+                                            <div class="upload-icon" id="uploadIcon">📷</div>
+                                            <span id="uploadText">Upload Photo<br>(2x2)</span>
+                                            <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+                                        </div>
+                                        <div style="flex:1;">
+                                            <div class="form-group">
+                                                <label>First Name <span class="required">*</span></label>
+                                                <input type="text" class="form-control" placeholder="Enter first name" id="regFirstName" oninput="updateCardPreview()">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Middle Name</label>
+                                                <input type="text" class="form-control" placeholder="Enter middle name" id="regMiddleName">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Last Name <span class="required">*</span></label>
+                                                <input type="text" class="form-control" placeholder="Enter last name" id="regLastName" oninput="updateCardPreview()">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Date of Birth <span class="required">*</span></label>
+                                            <input type="date" class="form-control" id="regDOB" oninput="updateCardPreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Gender <span class="required">*</span></label>
+                                            <select class="form-control" id="regGender" onchange="updateCardPreview()">
+                                                <option value="">Select gender</option>
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Civil Status</label>
+                                            <select class="form-control" id="regCivil">
+                                                <option value="">Select status</option>
+                                                <option>Single</option>
+                                                <option>Married</option>
+                                                <option>Widowed</option>
+                                                <option>Separated</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Blood Type</label>
+                                            <select class="form-control" id="regBlood" onchange="updateCardPreview()">
+                                                <option value="">Select blood type</option>
+                                                <option>A+</option><option>A-</option>
+                                                <option>B+</option><option>B-</option>
+                                                <option>AB+</option><option>AB-</option>
+                                                <option>O+</option><option>O-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header"><h2>📍 Address & Contact</h2></div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Complete Address <span class="required">*</span></label>
+                                        <input type="text" class="form-control" placeholder="House/Unit No., Street, Subdivision" id="regAddress" oninput="updateCardPreview()">
+                                    </div>
+                                    <div class="form-row-3">
+                                        <div class="form-group">
+                                            <label>Block</label>
+                                            <input type="text" class="form-control" placeholder="Block #" id="regBlock" oninput="updateCardPreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Lot</label>
+                                            <input type="text" class="form-control" placeholder="Lot #" id="regLot" oninput="updateCardPreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Zone <span class="required">*</span></label>
+                                            <select class="form-control" id="regZone" onchange="updateCardPreview()">
+                                                <option value="">Select Zone</option>
+                                                <option>Zone A - North</option>
+                                                <option>Zone B - South</option>
+                                                <option>Zone C - East</option>
+                                                <option>Zone D - West</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Mobile Number <span class="required">*</span></label>
+                                            <input type="tel" class="form-control" placeholder="+63 XXX XXX XXXX" id="regPhone">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email Address</label>
+                                            <input type="email" class="form-control" placeholder="email@example.com" id="regEmail">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header"><h2>🆘 Emergency Contact</h2></div>
+                                <div class="card-body">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Contact Person</label>
+                                            <input type="text" class="form-control" placeholder="Full name" id="regEmergencyName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Relationship</label>
+                                            <input type="text" class="form-control" placeholder="e.g., Spouse, Parent" id="regEmergencyRel">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Contact Number</label>
+                                        <input type="tel" class="form-control" placeholder="+63 XXX XXX XXXX" id="regEmergencyPhone">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex;gap:12px;margin-top:1rem;">
+                                <button class="btn btn-primary" onclick="registerMember()">📝 Register Member</button>
+                                <button class="btn btn-success" onclick="registerAndAddAnother()">➕ Register & Add Another</button>
+                                <button class="btn btn-secondary" onclick="clearForm()">🔄 Clear Form</button>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT SIDE: PREVIEW & CHECKLIST -->
+                        <div>
+                            <div class="card">
+                                <div class="card-header"><h2>💳 ID Card Preview (Live)</h2></div>
+                                <div class="card-body" style="display:flex;justify-content:center;padding:2rem;">
+                                    <div class="id-card">
+                                        <div class="id-card-top">
+                                            <div class="id-card-org">
+                                                <div class="org-logo">🏘️</div>
+                                                <div>
+                                                    <h3>Greenville Community</h3>
+                                                    <small>Official Smart ID Card</small>
+                                                </div>
+                                            </div>
+                                            <div class="id-card-chip">💳</div>
+                                        </div>
+                                        <div class="id-card-body">
+                                            <div class="id-card-photo" id="cardPreviewPhoto">👤</div>
+                                            <div class="id-card-details">
+                                                <h2 id="previewName">Full Name</h2>
+                                                <div class="detail-row"><span class="label">DOB:</span><span class="value" id="previewDOB">—</span></div>
+                                                <div class="detail-row"><span class="label">Gender:</span><span class="value" id="previewGender">—</span></div>
+                                                <div class="detail-row"><span class="label">Zone:</span><span class="value" id="previewZone">—</span></div>
+                                                <div class="detail-row"><span class="label">Address:</span><span class="value" id="previewAddress">—</span></div>
+                                                <div class="detail-row"><span class="label">Blood:</span><span class="value" id="previewBlood">—</span></div>
+                                                <div class="detail-row"><span class="label">Valid:</span><span class="value" id="previewValid">—</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="id-card-bottom">
+                                            <div>
+                                                <div class="id-card-number" id="previewID">CID-2024-XXXX</div>
+                                                <div style="font-size:0.65rem;opacity:0.7;margin-top:2px;" id="previewIssued">Pending...</div>
+                                            </div>
+                                            <div class="id-card-qr">
+                                                <div class="qr-grid">
+                                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                    <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                    <div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div>
+                                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                                    <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header"><h2>📋 Quick Stats</h2></div>
+                                <div class="card-body">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:center;">
+                                        <div style="background:#e8f0fe;border-radius:10px;padding:1rem;">
+                                            <div style="font-size:1.5rem;font-weight:700;color:var(--primary);" id="regTotalCount">0</div>
+                                            <div style="font-size:0.78rem;color:var(--text-gray);">Total Registered</div>
+                                        </div>
+                                        <div style="background:#e6f4ea;border-radius:10px;padding:1rem;">
+                                            <div style="font-size:1.5rem;font-weight:700;color:var(--secondary);" id="regTodayCount">0</div>
+                                            <div style="font-size:0.78rem;color:var(--text-gray);">Today's Registrations</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ID CARDS PAGE ===== -->
+                <div class="page-section" id="page-id-cards">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>ID Card Management</h1>
+                            <p>View, print, and manage community ID cards</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="showToast('info','Print','Batch print feature coming soon')">🖨️ Batch Print</button>
+                    </div>
+                    <div id="idCardsContainer" class="fade-in" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:2rem;">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <!-- ===== VERIFY PAGE ===== -->
+                <div class="page-section" id="page-verify">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Verify ID Card</h1>
+                            <p>Scan QR code or enter ID number to verify membership</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 fade-in">
+                        <div class="card">
+                            <div class="card-header"><h2>📱 QR Code Scanner</h2></div>
+                            <div class="card-body" style="text-align:center;">
+                                <div class="scanner-area">
+                                    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                                    <div class="scanner-line"></div>
+                                    <div class="scanner-text">📷 Point camera at QR code</div>
+                                </div>
+                                <button class="btn btn-primary" style="margin-top:1rem;" onclick="simulateScan()">📷 Simulate Scan</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card">
+                                <div class="card-header"><h2>🔢 Manual Verification</h2></div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Enter ID Number</label>
+                                        <input type="text" class="form-control" placeholder="CID-XXXX-XXXX" id="verifyIdInput" style="font-family:monospace;font-size:1.1rem;text-align:center;letter-spacing:2px;">
+                                    </div>
+                                    <button class="btn btn-primary" style="width:100%;" onclick="verifyMember()">✅ Verify ID</button>
+                                </div>
+                            </div>
+                            <div class="card" id="verificationResult" style="display:none;">
+                                <div class="card-body" id="verifyResultContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== REPORTS PAGE ===== -->
+                <div class="page-section" id="page-reports">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Reports & Analytics</h1>
+                            <p>Community membership insights and data</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="exportMembers()">📥 Export Report</button>
+                    </div>
+                    <div class="stats-grid fade-in">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">📝</div>
+                            <div class="stat-info"><h3 id="reportTotal">0</h3><p>Total Members</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">✅</div>
+                            <div class="stat-info"><h3 id="reportActive">0</h3><p>Active</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">⏳</div>
+                            <div class="stat-info"><h3 id="reportPending">0</h3><p>Pending</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple">🗺</div>
+                            <div class="stat-info"><h3 id="reportZones">0</h3><p>Zones Active</p></div>
+                        </div>
+                    </div>
+                    <div class="grid-2 fade-in">
+                        <div class="card">
+                            <div class="card-header"><h2>🗺️ Distribution by Zone</h2></div>
+                            <div class="card-body" id="zoneDistribution">
+                                <p style="color:var(--text-gray);text-align:center;padding:2rem;">Add members to see zone distribution</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h2>📊 Status Breakdown</h2></div>
+                            <div class="card-body" id="statusBreakdown">
+                                <p style="color:var(--text-gray);text-align:center;padding:2rem;">Add members to see status breakdown</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ACCESS LOG ===== -->
+                <div class="page-section" id="page-access-log">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Access Log</h1>
+                            <p>Track all ID verification and system activities</p>
+                        </div>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-body" style="padding:0;">
+                            <table>
+                                <thead>
+                                    <tr><th>Time</th><th>User</th><th>Activity</th><th>Details</th><th>Status</th></tr>
+                                </thead>
+                                <tbody id="accessLogTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SETTINGS ===== -->
+                <div class="page-section" id="page-settings">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Settings</h1>
+                            <p>System configuration and preferences</p>
+                        </div>
+                    </div>
+                    <div class="grid-2 fade-in">
+                        <div class="card">
+                            <div class="card-header"><h2>🏘️ Community Settings</h2></div>
+                            <div class="card-body">
+                                <div class="form-group"><label>Community Name</label><input type="text" class="form-control" value="Greenville Community"></div>
+                                <div class="form-group"><label>Address</label><input type="text" class="form-control" value="123 Main Street, Metro City"></div>
+                                <button class="btn btn-primary" onclick="showToast('success','Saved','Community settings saved!')">💾 Save Changes</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h2>🔧 Preferences</h2></div>
+                            <div class="card-body">
+                                <div class="setting-item"><div class="setting-info"><h4>Auto-approve</h4><p>Auto approve new registrations</p></div><div class="toggle" onclick="this.classList.toggle('active')"></div></div>
+                                <div class="setting-item"><div class="setting-info"><h4>Notifications</h4><p>Email alerts for new members</p></div><div class="toggle active" onclick="this.classList.toggle('active')"></div></div>
+                                <div class="setting-item"><div class="setting-info"><h4>QR Verification</h4><p>Enable QR scanning</p></div><div class="toggle active" onclick="this.classList.toggle('active')"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== HELP ===== -->
+                <div class="page-section" id="page-help">
+                    <div class="page-header fade-in">
+                        <div>
+                            <h1>Help & Support</h1>
+                            <p>Get help with the Community Smart ID System</p>
+                        </div>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-header"><h2>❓ Quick Guide</h2></div>
+                        <div class="card-body">
+                            <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;">
+                                <summary style="font-weight:600;cursor:pointer;">How to add a new member?</summary>
+                                <p style="margin-top:8px;color:var(--text-gray);">Click "Register New" in the sidebar → Fill in personal info, address, contact → Click "Register Member"</p>
+                            </details>
+                            <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;">
+                                <summary style="font-weight:600;cursor:pointer;">How to verify an ID?</summary>
+                                <p style="margin-top:8px;color:var(--text-gray);">Go to "Verify ID" → Enter the CID number → Click Verify. Or use QR scanner.</p>
+                            </details>
+                            <details style="margin-bottom:12px;padding:12px;border:1px solid var(--border);border-radius:8px;">
+                                <summary style="font-weight:600;cursor:pointer;">Default Login Credentials</summary>
+                                <p style="margin-top:8px;color:var(--text-gray);">Email: admin@community.com | Password: admin123</p>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== MEMBER DETAILS MODAL ===== -->
+    <div class="modal-overlay" id="memberModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Member Details</h2>
+                <button class="modal-close" onclick="closeModal('memberModal')">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <button class="btn btn-secondary" onclick="closeModal('memberModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SUCCESS MODAL ===== -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal" style="max-width:500px;">
+            <div class="modal-body" id="successModalBody">
+                <!-- Dynamic -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ==============================
+        // DATA STORE
+        // ==============================
+        let members = [];
+        let accessLogs = [];
+        let todayRegistrations = 0;
+        let currentUser = null;
+        let nextIdNumber = 1001;
+
+        // ==============================
+        // AUTH FUNCTIONS
+        // ==============================
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+        }
+
+        function showSignup() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const container = document.getElementById('passwordStrength');
+            const bars = [document.getElementById('str1'), document.getElementById('str2'), document.getElementById('str3'), document.getElementById('str4')];
+            const text = document.getElementById('strengthText');
+
+            if (!password) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength++;
+
+            const levels = ['', 'weak', 'medium', 'medium', 'strong'];
+            const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+
+            bars.forEach((bar, i) => {
+                bar.className = 'strength-bar';
+                if (i < strength) {
+                    bar.classList.add('active', levels[strength]);
+                }
+            });
+
+            text.className = 'strength-text ' + levels[strength];
+            text.textContent = labels[strength];
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            // Clear errors
+            document.getElementById('loginEmailError').classList.remove('show');
+            document.getElementById('loginPasswordError').classList.remove('show');
+
+            let valid = true;
+
+            if (!email || !email.includes('@')) {
+                document.getElementById('loginEmailError').classList.add('show');
+                document.getElementById('loginEmail').classList.add('error');
+                valid = false;
+            }
+
+            if (!password || password.length < 6) {
+                document.getElementById('loginPasswordError').classList.add('show');
+                document.getElementById('loginPassword').classList.add('error');
+                valid = false;
+            }
+
+            if (!valid) return;
+
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('loading');
+
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                currentUser = {
+                    name: 'Admin User',
+                    email: email,
+                    role: 'Administrator',
+                    initial: email.charAt(0).toUpperCase()
+                };
+
+                document.getElementById('authWrapper').classList.add('hidden');
+                document.getElementById('appWrapper').classList.add('active');
+                document.getElementById('userAvatar').textContent = currentUser.initial;
+                document.getElementById('dropdownName').textContent = currentUser.name;
+                document.getElementById('dropdownEmail').textContent = currentUser.email;
+                document.getElementById('dashboardUser').textContent = currentUser.name;
+
+                addAccessLog(currentUser.name, 'Login', 'Signed in successfully', 'success');
+                updateAllCounts();
+                showToast('success', 'Welcome!', `Signed in as ${currentUser.name}`);
+            }, 1500);
+        }
+
+        function handleSignup() {
+            const first = document.getElementById('signupFirst').value.trim();
+            const last = document.getElementById('signupLast').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const role = document.getElementById('signupRole').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirm').value;
+            const agree = document.getElementById('agreeTerms').checked;
+
+            if (!first || !last) { showToast('error', 'Error', 'Please enter your full name'); return; }
+            if (!email || !email.includes('@')) { showToast('error', 'Error', 'Please enter a valid email'); return; }
+            if (!role) { showToast('error', 'Error', 'Please select a role'); return; }
+            if (password.length < 6) { showToast('error', 'Error', 'Password must be at least 6 characters'); return; }
+            if (password !== confirm) { showToast('error', 'Error', 'Passwords do not match'); return; }
+            if (!agree) { showToast('error', 'Error', 'Please agree to Terms of Service'); return; }
+
+            currentUser = {
+                name: `${first} ${last}`,
+                email: email,
+                role: role,
+                initial: first.charAt(0).toUpperCase()
+            };
+
+            showToast('success', 'Account Created!', `Welcome ${currentUser.name}!`);
+
+            setTimeout(() => {
+                document.getElementById('authWrapper').classList.add('hidden');
+                document.getElementById('appWrapper').classList.add('active');
+                document.getElementById('userAvatar').textContent = currentUser.initial;
+                document.getElementById('dropdownName').textContent = currentUser.name;
+                document.getElementById('dropdownEmail').textContent = currentUser.email;
+                document.getElementById('dashboardUser').textContent = currentUser.name;
+
+                addAccessLog(currentUser.name, 'Signup', 'Account created & signed in', 'success');
+                updateAllCounts();
+            }, 500);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                addAccessLog(currentUser?.name || 'Admin', 'Logout', 'Signed out', 'info');
+                document.getElementById('appWrapper').classList.remove('active');
+                document.getElementById('authWrapper').classList.remove('hidden');
+                showToast('info', 'Signed Out', 'You have been signed out');
+                currentUser = null;
+            }
+        }
+
+        // ==============================
+        // NAVIGATION
+        // ==============================
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + pageId);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) link.classList.add('active');
+            });
+
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+
+            if (pageId === 'members') renderMembersTable();
+            if (pageId === 'id-cards') renderIdCards();
+            if (pageId === 'reports') updateReports();
+            if (pageId === 'access-log') renderAccessLog();
+
+            window.scrollTo(0, 0);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-dropdown')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+
+        // ==============================
+        // MEMBER REGISTRATION
+        // ==============================
+        function generateId() {
+            const year = new Date().getFullYear();
+            const num = String(nextIdNumber++).padStart(4, '0');
+            return `CID-${year}-${num}`;
+        }
+
+        function registerMember() {
+            const member = collectFormData();
+            if (!member) return;
+
+            members.push(member);
+            todayRegistrations++;
+
+            addAccessLog(currentUser?.name || 'Admin', 'Registration', `Registered ${member.fullName} (${member.id})`, 'success');
+            addDashboardActivity('new', 'New Registration', `${member.fullName} — ${member.id}`);
+
+            updateAllCounts();
+            showSuccessModal(member);
+            clearForm();
+        }
+
+        function registerAndAddAnother() {
+            const member = collectFormData();
+            if (!member) return;
+
+            members.push(member);
+            todayRegistrations++;
+
+            addAccessLog(currentUser?.name || 'Admin', 'Registration', `Registered ${member.fullName} (${member.id})`, 'success');
+            addDashboardActivity('new', 'New Registration', `${member.fullName} — ${member.id}`);
+
+            updateAllCounts();
+            showToast('success', 'Member Registered!', `${member.fullName} added. Form ready for next entry.`);
+            clearForm();
+        }
+
+        function collectFormData() {
+            const first = document.getElementById('regFirstName').value.trim();
+            const middle = document.getElementById('regMiddleName').value.trim();
+            const last = document.getElementById('regLastName').value.trim();
+            const dob = document.getElementById('regDOB').value;
+            const gender = document.getElementById('regGender').value;
+            const civil = document.getElementById('regCivil').value;
+            const blood = document.getElementById('regBlood').value;
+            const address = document.getElementById('regAddress').value.trim();
+            const block = document.getElementById('regBlock').value.trim();
+            const lot = document.getElementById('regLot').value.trim();
+            const zone = document.getElementById('regZone').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const emergName = document.getElementById('regEmergencyName').value.trim();
+            const emergRel = document.getElementById('regEmergencyRel').value.trim();
+            const emergPhone = document.getElementById('regEmergencyPhone').value.trim();
+
+            if (!first) { showToast('error', 'Required', 'First name is required'); return null; }
+            if (!last) { showToast('error', 'Required', 'Last name is required'); return null; }
+            if (!dob) { showToast('error', 'Required', 'Date of birth is required'); return null; }
+            if (!gender) { showToast('error', 'Required', 'Gender is required'); return null; }
+            if (!zone) { showToast('error', 'Required', 'Zone is required'); return null; }
+            if (!phone) { showToast('error', 'Required', 'Phone number is required'); return null; }
+
+            const id = generateId();
+            const now = new Date();
+            const expiry = new Date(now);
+            expiry.setFullYear(expiry.getFullYear() + 1);
+
+            return {
+                id: id,
+                firstName: first,
+                middleName: middle,
+                lastName: last,
+                fullName: `${first}${middle ? ' ' + middle : ''} ${last}`,
+                dob: dob,
+                gender: gender,
+                civilStatus: civil,
+                bloodType: blood,
+                address: address,
+                block: block,
+                lot: lot,
+                zone: zone,
+                phone: phone,
+                email: email,
+                emergencyName: emergName,
+                emergencyRelation: emergRel,
+                emergencyPhone: emergPhone,
+                registered: now.toISOString(),
+                registeredFormatted: formatDate(now),
+                expiry: expiry.toISOString(),
+                expiryFormatted: formatDate(expiry),
+                status: 'Active',
+                photoData: document.getElementById('photoUpload').classList.contains('has-photo') ? '📸' : null,
+                genderIcon: gender === 'Male' ? '👨' : gender === 'Female' ? '👩' : '👤'
+            };
+        }
+
+        function clearForm() {
+            const ids = ['regFirstName','regMiddleName','regLastName','regDOB','regGender','regCivil','regBlood','regAddress','regBlock','regLot','regZone','regPhone','regEmail','regEmergencyName','regEmergencyRel','regEmergencyPhone'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Reset photo
+            const photoUpload = document.getElementById('photoUpload');
+            photoUpload.classList.remove('has-photo');
+            document.getElementById('uploadIcon').textContent = '📷';
+            document.getElementById('uploadIcon').style.display = 'block';
+            document.getElementById('uploadText').style.display = 'block';
+            const existingPreview = photoUpload.querySelector('.photo-preview');
+            if (existingPreview) existingPreview.remove();
+
+            updateCardPreview();
+        }
+
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoUpload = document.getElementById('photoUpload');
+                    photoUpload.classList.add('has-photo');
+                    document.getElementById('uploadIcon').style.display = 'none';
+                    document.getElementById('uploadText').style.display = 'none';
+
+                    let preview = photoUpload.querySelector('.photo-preview');
+                    if (!preview) {
+                        preview = document.createElement('img');
+                        preview.className = 'photo-preview';
+                        photoUpload.appendChild(preview);
+                    }
+                    preview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateCardPreview() {
+            const first = document.getElementById('regFirstName').value || '';
+            const last = document.getElementById('regLastName').value || '';
+            document.getElementById('previewName').textContent = (first || last) ? `${first} ${last}`.trim() : 'Full Name';
+
+            const dob = document.getElementById('regDOB').value;
+            document.getElementById('previewDOB').textContent = dob ? formatDateStr(dob) : '—';
+            document.getElementById('previewGender').textContent = document.getElementById('regGender').value || '—';
+            document.getElementById('previewZone').textContent = document.getElementById('regZone').value || '—';
+
+            const block = document.getElementById('regBlock').value;
+            const lot = document.getElementById('regLot').value;
+            document.getElementById('previewAddress').textContent = (block || lot) ? `Blk ${block}, Lot ${lot}` : '—';
+            document.getElementById('previewBlood').textContent = document.getElementById('regBlood').value || '—';
+
+            const now = new Date();
+            const exp = new Date(now);
+            exp.setFullYear(exp.getFullYear() + 1);
+            document.getElementById('previewValid').textContent = (first || last) ? `${formatShortDate(now)} - ${formatShortDate(exp)}` : '—';
+        }
+
+        // ==============================
+        // SUCCESS MODAL
+        // ==============================
+        function showSuccessModal(member) {
+            document.getElementById('successModalBody').innerHTML = `
+                <div class="success-animation">
+                    <div class="success-checkmark">✅</div>
+                    <h2 style="margin-bottom:8px;">Member Registered Successfully!</h2>
+                    <p style="color:var(--text-gray);margin-bottom:1.5rem;">A new community ID has been generated</p>
+                    <div style="background:#f8f9fa;border-radius:12px;padding:1.5rem;text-align:left;margin-bottom:1.5rem;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">Full Name</span><br><strong>${member.fullName}</strong></div>
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">ID Number</span><br><strong style="font-family:monospace;color:var(--primary);">${member.id}</strong></div>
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">Zone</span><br><strong>${member.zone}</strong></div>
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">Status</span><br><span class="badge badge-active">Active</span></div>
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">Registered</span><br><strong>${member.registeredFormatted}</strong></div>
+                            <div><span style="font-size:0.78rem;color:var(--text-gray);">Expires</span><br><strong>${member.expiryFormatted}</strong></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:center;">
+                        <button class="btn btn-primary" onclick="showPage('id-cards');closeModal('successModal');">💳 View ID Card</button>
+                        <button class="btn btn-secondary" onclick="showPage('members');closeModal('successModal');">👥 View Members</button>
+                        <button class="btn btn-secondary" onclick="closeModal('successModal')">✕ Close</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        // ==============================
+        // RENDER MEMBERS TABLE
+        // ==============================
+        function renderMembersTable() {
+            const tbody = document.getElementById('membersTableBody');
+            const search = document.getElementById('memberSearch')?.value.toLowerCase() || '';
+            const statusF = document.getElementById('statusFilter')?.value || '';
+            const zoneF = document.getElementById('zoneFilter')?.value || '';
+
+            let filtered = members.filter(m => {
+                const matchSearch = !search || m.fullName.toLowerCase().includes(search) || m.id.toLowerCase().includes(search) || m.address.toLowerCase().includes(search);
+                const matchStatus = !statusF || m.status === statusF;
+                const matchZone = !zoneF || m.zone.startsWith(zoneF);
+                return matchSearch && matchStatus && matchZone;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h3>${members.length === 0 ? 'No members registered yet' : 'No matching results'}</h3>
+                            <p>${members.length === 0 ? 'Click "Register New" to add your first member' : 'Try adjusting your search or filters'}</p>
+                            ${members.length === 0 ? '<button class="btn btn-primary" onclick="showPage(\'register\')">➕ Add First Member</button>' : ''}
+                        </div>
+                    </td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((m, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${m.fullName}</strong><br><small style="color:var(--text-gray);">${m.block ? 'Blk ' + m.block + ', Lot ' + m.lot : m.address}</small></td>
+                    <td style="font-family:monospace;font-weight:600;">${m.id}</td>
+                    <td>${m.zone.split(' - ')[0]}</td>
+                    <td>${m.phone}</td>
+                    <td>${m.registeredFormatted}</td>
+                    <td><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="viewMemberDetail('${m.id}')">👁</button>
+                        <button class="btn btn-sm btn-secondary" onclick="showPage('id-cards')">💳</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteMember('${m.id}')">🗑</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('memberDirectoryCount').textContent = filtered.length;
+        }
+
+        function filterMembers() {
+            renderMembersTable();
+        }
+
+        function deleteMember(id) {
+            if (confirm('Are you sure you want to delete this member?')) {
+                const member = members.find(m => m.id === id);
+                members = members.filter(m => m.id !== id);
+                addAccessLog(currentUser?.name || 'Admin', 'Delete', `Deleted ${member?.fullName} (${id})`, 'error');
+                addDashboardActivity('delete', 'Member Deleted', `${member?.fullName} removed`);
+                updateAllCounts();
+                renderMembersTable();
+                showToast('error', 'Deleted', `Member ${id} has been removed`);
+            }
+        }
+
+        // ==============================
+        // VIEW MEMBER DETAIL
+        // ==============================
+        function viewMemberDetail(id) {
+            const m = members.find(mem => mem.id === id);
+            if (!m) return;
+
+            document.getElementById('modalTitle').textContent = `${m.fullName} — Details`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;">
+                    <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#6ab7ff);display:flex;align-items:center;justify-content:center;font-size:2rem;color:white;">${m.genderIcon}</div>
+                    <div>
+                        <h2 style="font-size:1.3rem;">${m.fullName}</h2>
+                        <div style="font-family:monospace;color:var(--primary);font-weight:600;">${m.id}</div>
+                        <div style="margin-top:4px;"><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span> <span class="badge" style="background:#e8f0fe;color:var(--primary);">${m.zone}</span></div>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Date of Birth</p><p>${formatDateStr(m.dob)}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Gender</p><p>${m.gender}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Civil Status</p><p>${m.civilStatus || '—'}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Blood Type</p><p>${m.bloodType || '—'}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Phone</p><p>${m.phone}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Email</p><p>${m.email || '—'}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Address</p><p>${m.address}${m.block ? ', Blk '+m.block+', Lot '+m.lot : ''}</p></div>
+                    <div><p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;">Registered</p><p>${m.registeredFormatted}</p></div>
+                    ${m.emergencyName ? `
+                    <div style="grid-column:span 2;border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem;">
+                        <p style="font-size:0.75rem;color:var(--text-gray);text-transform:uppercase;font-weight:600;margin-bottom:4px;">🆘 Emergency Contact</p>
+                        <p>${m.emergencyName} (${m.emergencyRelation}) — ${m.emergencyPhone}</p>
+                    </div>` : ''}
+                </div>
+            `;
+            document.getElementById('modalFooter').innerHTML = `
+                <button class="btn btn-secondary" onclick="closeModal('memberModal')">Close</button>
+                <button class="btn btn-primary" onclick="showPage('id-cards');closeModal('memberModal');">💳 View ID Card</button>
+            `;
+            document.getElementById('memberModal').classList.add('active');
+        }
+
+        // ==============================
+        // RENDER ID CARDS
+        // ==============================
+        function renderIdCards() {
+            const container = document.getElementById('idCardsContainer');
+            if (members.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column:span 2;">
+                        <div class="empty-icon">💳</div>
+                        <h3>No ID Cards to Display</h3>
+                        <p>Register members to generate their ID cards</p>
+                        <button class="btn btn-primary" onclick="showPage('register')">➕ Register Member</button>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = members.slice().reverse().map(m => `
+                <div>
+                    <div class="id-card" style="margin-bottom:1rem;">
+                        <div class="id-card-top">
+                            <div class="id-card-org">
+                                <div class="org-logo">🏘️</div>
+                                <div><h3>Greenville Community</h3><small>Official Smart ID Card</small></div>
+                            </div>
+                            <div class="id-card-chip">💳</div>
+                        </div>
+                        <div class="id-card-body">
+                            <div class="id-card-photo">${m.genderIcon}</div>
+                            <div class="id-card-details">
+                                <h2>${m.fullName}</h2>
+                                <div class="detail-row"><span class="label">DOB:</span><span class="value">${formatDateStr(m.dob)}</span></div>
+                                <div class="detail-row"><span class="label">Gender:</span><span class="value">${m.gender}</span></div>
+                                <div class="detail-row"><span class="label">Zone:</span><span class="value">${m.zone}</span></div>
+                                <div class="detail-row"><span class="label">Address:</span><span class="value">${m.block ? 'Blk '+m.block+', Lot '+m.lot : m.address.substring(0,20)}</span></div>
+                                <div class="detail-row"><span class="label">Blood:</span><span class="value">${m.bloodType || '—'}</span></div>
+                                <div class="detail-row"><span class="label">Valid:</span><span class="value">${formatShortDate(new Date(m.registered))} - ${formatShortDate(new Date(m.expiry))}</span></div>
+                            </div>
+                        </div>
+                        <div class="id-card-bottom">
+                            <div>
+                                <div class="id-card-number">${m.id}</div>
+                                <div style="font-size:0.65rem;opacity:0.7;margin-top:2px;">Issued: ${m.registeredFormatted}</div>
+                            </div>
+                            <div class="id-card-qr">
+                                <div class="qr-grid">
+                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                    <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                    <div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell empty"></div>
+                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                    <div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div>
+                                    <div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell empty"></div><div class="qr-cell"></div><div class="qr-cell"></div><div class="qr-cell"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:center;">
+                        <button class="btn btn-sm btn-primary" onclick="showToast('success','Printed','ID Card for ${m.fullName} sent to printer')">🖨️ Print</button>
+                        <button class="btn btn-sm btn-secondary" onclick="showToast('info','Download','Downloading ${m.id}.pdf')">📥 Download</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==============================
+        // VERIFICATION
+        // ==============================
+        function verifyMember() {
+            const idInput = document.getElementById('verifyIdInput').value.trim().toUpperCase();
+            if (!idInput) { showToast('error', 'Error', 'Please enter an ID number'); return; }
+
+            const member = members.find(m => m.id === idInput);
+            const resultDiv = document.getElementById('verificationResult');
+            const content = document.getElementById('verifyResultContent');
+            resultDiv.style.display = 'block';
+
+            if (member) {
+                content.innerHTML = `
+                    <div style="text-align:center;">
+                        <div class="verify-icon success">✅</div>
+                        <h2 style="color:#1e8e3e;margin-bottom:8px;">Identity Verified!</h2>
+                        <p style="color:var(--text-gray);margin-bottom:1rem;">Member found in the system</p>
+                        <div style="text-align:left;background:#f8f9fa;border-radius:10px;padding:1rem;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;"><span style="color:var(--text-gray);">Name:</span><strong>${member.fullName}</strong></div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;"><span style="color:var(--text-gray);">ID:</span><strong style="font-family:monospace;">${member.id}</strong></div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.88rem;"><span style="color:var(--text-gray);">Zone:</span><strong>${member.zone}</strong></div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.88rem;"><span style="color:var(--text-gray);">Status:</span><span class="badge badge-${member.status.toLowerCase()}">${member.status}</span></div>
+                        </div>
+                    </div>`;
+                addAccessLog(currentUser?.name || 'System', 'Verification', `Verified ${member.fullName} (${member.id})`, 'success');
+                showToast('success', 'Verified', `${member.fullName} verified successfully`);
+            } else {
+                content.innerHTML = `
+                    <div style="text-align:center;">
+                        <div class="verify-icon fail">❌</div>
+                        <h2 style="color:#d93025;margin-bottom:8px;">Not Found</h2>
+                        <p style="color:var(--text-gray);">ID <strong>${idInput}</strong> does not exist in the system.</p>
+                    </div>`;
+                addAccessLog(currentUser?.name || 'System', 'Verification', `Failed verification: ${idInput}`, 'error');
+                showToast('error', 'Not Found', `ID ${idInput} not in system`);
+            }
+        }
+
+        function simulateScan() {
+            if (members.length === 0) {
+                showToast('warning', 'No Members', 'Register a member first to simulate scan');
+                return;
+            }
+            const randomMember = members[Math.floor(Math.random() * members.length)];
+            document.getElementById('verifyIdInput').value = randomMember.id;
+            showToast('info', 'QR Scanned', `Detected: ${randomMember.id}`);
+            setTimeout(() => verifyMember(), 500);
+        }
+
+        // ==============================
+        // REPORTS
+        // ==============================
+        function updateReports() {
+            const active = members.filter(m => m.status === 'Active').length;
+            const pending = members.filter(m => m.status === 'Pending').length;
+            const zones = [...new Set(members.map(m => m.zone))].length;
+
+            document.getElementById('reportTotal').textContent = members.length;
+            document.getElementById('reportActive').textContent = active;
+            document.getElementById('reportPending').textContent = pending;
+            document.getElementById('reportZones').textContent = zones;
+
+            // Zone distribution
+            const zoneCounts = {};
+            members.forEach(m => {
+                const z = m.zone.split(' - ')[0];
+                zoneCounts[z] = (zoneCounts[z] || 0) + 1;
+            });
+
+            const zoneDiv = document.getElementById('zoneDistribution');
+            if (Object.keys(zoneCounts).length === 0) {
+                zoneDiv.innerHTML = '<p style="color:var(--text-gray);text-align:center;padding:2rem;">No data yet</p>';
+            } else {
+                const colors = ['blue', 'green', 'yellow', 'blue'];
+                zoneDiv.innerHTML = Object.entries(zoneCounts).map(([zone, count], i) => `
+                    <div style="margin-bottom:1rem;">
+                        <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:4px;">
+                            <span>${zone}</span>
+                            <span style="font-weight:600;">${count} (${Math.round(count/members.length*100)}%)</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill ${colors[i%colors.length]}" style="width:${count/members.length*100}%"></div></div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ==============================
+        // ACCESS LOG
+        // ==============================
+        function addAccessLog(user, activity, details, status) {
+            accessLogs.unshift({
+                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                user: user,
+                activity: activity,
+                details: details,
+                status: status
+            });
+            if (accessLogs.length > 50) accessLogs.pop();
+        }
+
+        function renderAccessLog() {
+            const tbody = document.getElementById('accessLogTable');
+            if (accessLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-gray);">No activity logged yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = accessLogs.map(log => `
+                <tr>
+                    <td style="white-space:nowrap;">${log.time}</td>
+                    <td><strong>${log.user}</strong></td>
+                    <td>${log.activity}</td>
+                    <td>${log.details}</td>
+                    <td><span class="badge badge-${log.status === 'success' ? 'active' : log.status === 'error' ? 'expired' : 'pending'}">${log.status === 'success' ? '✓ Success' : log.status === 'error' ? '✕ Failed' : 'ℹ Info'}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // ==============================
+        // DASHBOARD ACTIVITY
+        // ==============================
+        function addDashboardActivity(type, title, description) {
+            const iconMap = { new: 'new', update: 'update', alert: 'alert', delete: 'delete' };
+            const symbolMap = { new: '✓', update: '↻', alert: '!', delete: '✕' };
+            const list = document.getElementById('activityLog');
+
+            const li = document.createElement('li');
+            li.className = 'activity-item';
+            li.style.animation = 'fadeIn 0.5s ease';
+            li.innerHTML = `
+                <div class="activity-icon ${iconMap[type]}">${symbolMap[type]}</div>
+                <div class="activity-content">
+                    <h4>${title}</h4>
+                    <p>${description}</p>
+                </div>
+                <span class="activity-time">just now</span>
+            `;
+            list.insertBefore(li, list.firstChild);
+
+            // Keep max 10 items
+            while (list.children.length > 10) list.removeChild(list.lastChild);
+        }
+
+        // ==============================
+        // UPDATE ALL COUNTS
+        // ==============================
+        function updateAllCounts() {
+            const total = members.length;
+            const active = members.filter(m => m.status === 'Active').length;
+            const pending = members.filter(m => m.status === 'Pending').length;
+            const expired = members.filter(m => m.status === 'Expired').length;
+
+            document.getElementById('totalMembersCount').textContent = total;
+            document.getElementById('activeMembersCount').textContent = active;
+            document.getElementById('pendingMembersCount').textContent = pending;
+            document.getElementById('expiredMembersCount').textContent = expired;
+            document.getElementById('memberCountBadge').textContent = total;
+            document.getElementById('regTotalCount').textContent = total;
+            document.getElementById('regTodayCount').textContent = todayRegistrations;
+
+            // Update recent members on dashboard
+            updateRecentMembers();
+        }
+
+        function updateRecentMembers() {
+            const tbody = document.getElementById('recentMembersTable');
+            if (members.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="5">
+                        <div class="empty-state" style="padding:2rem;">
+                            <div class="empty-icon">👥</div>
+                            <h3>No members yet</h3>
+                            <p>Start by adding your first community member</p>
+                            <button class="btn btn-primary" onclick="showPage('register')">➕ Add First Member</button>
+                        </div>
+                    </td></tr>`;
+                return;
+            }
+
+            const recent = members.slice().reverse().slice(0, 5);
+            tbody.innerHTML = recent.map(m => `
+                <tr>
+                    <td><strong>${m.fullName}</strong></td>
+                    <td style="font-family:monospace;">${m.id}</td>
+                    <td>${m.zone.split(' - ')[0]}</td>
+                    <td><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span></td>
+                    <td>${m.registeredFormatted}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ==============================
+        // EXPORT
+        // ==============================
+        function exportMembers() {
+            if (members.length === 0) { showToast('warning', 'No Data', 'No members to export'); return; }
+
+            let csv = 'ID,Full Name,DOB,Gender,Zone,Phone,Email,Address,Status,Registered\n';
+            members.forEach(m => {
+                csv += `${m.id},"${m.fullName}",${m.dob},${m.gender},"${m.zone}",${m.phone},${m.email || ''},"${m.address}",${m.status},${m.registeredFormatted}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `smartid_members_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('success', 'Exported', `${members.length} members exported to CSV`);
+            addAccessLog(currentUser?.name || 'Admin', 'Export', `Exported ${members.length} members`, 'success');
+        }
+
+        // ==============================
+        // MODALS
+        // ==============================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        // ==============================
+        // TOAST
+        // ==============================
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <div class="toast-message"><strong>${title}</strong><span>${message}</span></div>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    toast.style.transition = 'all 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        // ==============================
+        // UTILITY FUNCTIONS
+        // ==============================
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatDateStr(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatShortDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        }
+
+        // ==============================
+        // SEED SAMPLE DATA (Optional)
+        // ==============================
+        function seedSampleData() {
+            const samples = [
+                { first: 'Maria', last: 'Santos', gender: 'Female', dob: '1985-03-22', zone: 'Zone A - North', block: '5', lot: '12', phone: '+63 912 345 6789', blood: 'A+', address: 'Main Street' },
+                { first: 'John', last: 'Rivera', gender: 'Male', dob: '1990-07-14', zone: 'Zone B - South', block: '3', lot: '8', phone: '+63 917 654 3210', blood: 'B+', address: 'Oak Avenue' },
+                { first: 'Ana', last: 'Cruz', gender: 'Female', dob: '1988-11-30', zone: 'Zone A - North', block: '7', lot: '3', phone: '+63 923 456 7890', blood: 'O+', address: 'Elm Street' },
+                { first: 'Pedro', last: 'Garcia', gender: 'Male', dob: '1958-06-08', zone: 'Zone C - East', block: '1', lot: '22', phone: '+63 935 678 9012', blood: 'AB+', address: 'Pine Road' },
+                { first: 'Carmen', last: 'Lim', gender: 'Female', dob: '1995-01-15', zone: 'Zone D - West', block: '4', lot: '7', phone: '+63 967 901 2345', blood: 'O-', address: 'Cedar Lane' }
+            ];
+
+            samples.forEach(s => {
+                const id = generateId();
+                const now = new Date();
+                const exp = new Date(now);
+                exp.setFullYear(exp.getFullYear() + 1);
+
+                members.push({
+                    id: id,
+                    firstName: s.first,
+                    middleName: '',
+                    lastName: s.last,
+                    fullName: `${s.first} ${s.last}`,
+                    dob: s.dob,
+                    gender: s.gender,
+                    civilStatus: 'Single',
+                    bloodType: s.blood,
+                    address: s.address,
+                    block: s.block,
+                    lot: s.lot,
+                    zone: s.zone,
+                    phone: s.phone,
+                    email: '',
+                    emergencyName: '',
+                    emergencyRelation: '',
+                    emergencyPhone: '',
+                    registered: now.toISOString(),
+                    registeredFormatted: formatDate(now),
+                    expiry: exp.toISOString(),
+                    expiryFormatted: formatDate(exp),
+                    status: 'Active',
+                    photoData: null,
+                    genderIcon: s.gender === 'Male' ? '👨' : '👩'
+                });
+            });
+
+            todayRegistrations = samples.length;
+            updateAllCounts();
+        }
+
+        // Add enter key support for login
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        document.getElementById('loginEmail').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        // Remove error styling on input
+        document.getElementById('loginEmail').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('loginEmailError').classList.remove('show');
+        });
+
+        document.getElementById('loginPassword').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('loginPasswordError').classList.remove('show');
+        });
+    </script>
+
+</body>
+</html>
